@@ -5,8 +5,6 @@ ThriftR
 ThriftR is a pure R implementation of
 `Apache Thrift <http://thrift.apache.org/>`_.
 
-Documentation: https://thriftpy.readthedocs.org/
-
 
 Installation
 ============
