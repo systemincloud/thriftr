@@ -1,3 +1,28 @@
 #! /usr/bin/env Rscript
 
-cat('Hello\n')
+cat('R:START\n')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+cat('R:END\n')

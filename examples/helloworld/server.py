@@ -24,7 +24,7 @@ def print_subprocess(process):
             sys.stdout.flush()
 
 def main():
-    print("START")
+    print("PY:START")
     server = make_server(hello_thrift.HelloService, Hello(), '127.0.0.1', 6000)
     t1 = threading.Thread(target=serving, args = (server,))
     t1.setDaemon(True)
@@ -37,7 +37,7 @@ def main():
 
     process.wait()
 
-    print("END")
+    print("PY:END")
 
 if __name__ == '__main__':
     main()
