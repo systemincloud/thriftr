@@ -4,6 +4,7 @@ ThriftR
 
 ThriftR is a pure R implementation of
 `Apache Thrift <http://thrift.apache.org/>`_.
+This project is a R clone of `ThriftPy <https://github.com/eleme/thriftpy>`_.
 
 
 Installation
