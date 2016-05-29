@@ -17,12 +17,10 @@ def print_subprocess(process):
             sys.stdout.write(out)
             sys.stdout.flush()
 
-def main():
+def main(argv):
     print("PY:START")
-    directory = sys.argv[1]
+    directory = argv[0]
     service_thrift = thriftpy.load(directory + "/service.thrift", module_name="service_thrift")
-    #exec(open(directory + "/server.py").read())
-    #__import__(name="Server", fromlist=[directory + '.server'])
     mod = importlib.import_module(directory + '.server')
     server = make_server(service_thrift.Service, mod.Server(), '127.0.0.1', 6000)
     t1 = threading.Thread(target=serving, args = (server,))
@@ -39,4 +37,4 @@ def main():
     print("PY:END")
 
 if __name__ == '__main__':
-    main()
+    main(sys.argv[1:])
