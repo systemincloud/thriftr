@@ -4,6 +4,8 @@ import sys, importlib, thriftpy, threading
 from thriftpy.rpc import make_server
 from subprocess import Popen, PIPE
 
+PORT = 6000
+
 def serving(server):
     print("serving...")
     server.serve()
@@ -22,12 +24,12 @@ def main(argv):
     directory = argv[0]
     service_thrift = thriftpy.load(directory + "/service.thrift", module_name="service_thrift")
     mod = importlib.import_module(directory + '.server')
-    server = make_server(service_thrift.Service, mod.Server(), '127.0.0.1', 6000)
+    server = make_server(service_thrift.Service, mod.Server(), '127.0.0.1', PORT)
     t1 = threading.Thread(target=serving, args = (server,))
     t1.setDaemon(True)
     t1.start()
 
-    process = Popen([directory + "/client.R"], stdout=PIPE)
+    process = Popen([directory + "/client.R", str(PORT)], stdout=PIPE)
     t2 = threading.Thread(target=print_subprocess, args = (process,))
     t2.setDaemon(True)
     t2.start()

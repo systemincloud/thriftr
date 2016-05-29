@@ -1,6 +1,6 @@
-#' buffered.R
-
-library(R6)
+#' transport_buffered.R
+#'
+#' @export TBufferedTransportFactory
 
 TBufferedTransportFactory <- R6Class("TBufferedTransportFactory",
     public = list(

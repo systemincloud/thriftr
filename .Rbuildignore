@@ -1,4 +1,6 @@
 ^\.project$
 ^\.settings$
 ^\.gitignore$
+^\.pydevproject$
 ^target$
+^examples$

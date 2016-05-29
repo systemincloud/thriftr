@@ -11,3 +11,10 @@ URL: https://github.com/systemincloud/thriftr
 BugReports: https://github.com/systemincloud/thriftr/issues
 Depends:
     R6
+RoxygenNote: 5.0.1
+Collate:
+    'parser.R'
+    'protocol_binary.R'
+    'transport_buffered.R'
+    'rpc.R'
+    'transport_cbuffered.R'
