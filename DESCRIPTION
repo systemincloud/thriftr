@@ -15,6 +15,9 @@ RoxygenNote: 5.0.1
 Collate:
     'parser.R'
     'protocol_binary.R'
+    'transport_socket.R'
     'transport_buffered.R'
     'rpc.R'
+    'thrift.R'
+    'transport.R'
     'transport_cbuffered.R'
