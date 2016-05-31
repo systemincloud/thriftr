@@ -2,11 +2,13 @@
 % Please edit documentation in R/parser.R
 \name{load}
 \alias{load}
-\title{parser.R}
+\title{parser.R
+Load thrift file as a module.}
 \usage{
 load(path, module_name = NA, include_dirs = NA)
 }
 \description{
 parser.R
+Load thrift file as a module.
 }
 
