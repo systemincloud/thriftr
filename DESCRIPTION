@@ -14,6 +14,7 @@ Depends:
 RoxygenNote: 5.0.1
 Collate:
     'parser.R'
+    'parser_lexer.R'
     'protocol_binary.R'
     'transport_socket.R'
     'transport_buffered.R'

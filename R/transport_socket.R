@@ -27,7 +27,7 @@ TSocket <- R6Class("TSocket",
                                     port=self$port,
                                     blocking=TRUE,
                                     server=FALSE,
-                                    open="r+")
+                                    open="r+b")
     }
 
   )

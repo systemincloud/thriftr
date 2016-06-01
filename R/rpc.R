@@ -3,7 +3,8 @@
 #' @include protocol_binary.R
 #' @include transport_buffered.R
 #' @include transport_socket.R
-
+#'
+#' @return R6 class of thrift client defined by service file.
 
 #' @export
 make_client <- function(service, host="localhost",
