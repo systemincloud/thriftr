@@ -75,12 +75,17 @@ ThriftLexer <- R6Class("ThriftLexer",
     t_LITERAL = function(re = '(\"([^\\\n]|(\\.))*?\")|\'([^\\\n]|(\\.))*?\'', t) {
       s = t.value[1:-1]
       maps <- new.env(hash=TRUE,size=6)
-      assign(x='t', value='\t', envir=maps)
-      assign(x='r', value='\r', envir=maps)
-      assign(x='n', value='\n', envir=maps)
-      assign(x='\\', value='\\', envir=maps)
-      assign(x='\'', value='\'', envir=maps)
-      assign(x='"', value='\"', envir=maps)
+      maps[['t']] <- '\t'
+      maps[['r']] <- '\r'
+      maps[['n']] <- '\n'
+      maps[['\\']] <- '\\'
+      maps[['\'']] <- '\''
+      maps[['"']] <- '\"'
+#      assign(x='r', value='\r', envir=maps)
+#      assign(x='n', value='\n', envir=maps)
+#      assign(x='\\', value='\\', envir=maps)
+#      assign(x='\'', value='\'', envir=maps)
+#      assign(x='"', value='\"', envir=maps)
 
       i = 0
       l = length(s)
