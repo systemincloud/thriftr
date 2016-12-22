@@ -1,0 +1,23 @@
+Package: ${project.artifactId}
+Type: Package
+Title: ${project.name}
+Version: ${project.version}
+Date: ${date}
+Authors@R: c(person("Marek", "Jagielski", 
+                    role = c("aut", "cre", "cph"), 
+                    email = "marek.jagielski@gmail.com"),
+             person("Lixin", "Yu", 
+                    role = c("aut", "cph")))
+Author: Marek Jagielski [aut, cre, cph], Lixin Yu [aut, cph]
+Maintainer: Marek Jagielski <marek.jagielski@gmail.com>
+Description: ${project.description}
+License: MIT + file LICENSE
+URL: ${project.url}
+BugReports: ${project.issueManagement.url}
+Suggests: testthat
+Depends:
+    R6,
+    futile.logger
+RoxygenNote: 5.0.1
+Collate:
+    'parser.R'

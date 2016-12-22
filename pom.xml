@@ -4,12 +4,47 @@
 
   <groupId>thriftr</groupId>
   <artifactId>thriftr</artifactId>
-  <version>0.1.0</version>
+  <version>1.0.0</version>
   <packaging>pom</packaging>
-  <name>ThriftR is a pure R implementation of Apache Thrift.</name>
+  <name>Apache Thrift Client</name>
+  
+  <description>R implementation of Apache Thrift</description>
+  <url>https://github.com/systemincloud/thriftr</url>
+
+  <organization>
+    <name>System in Cloud</name>
+    <url>http://systemincloud.com/</url>
+  </organization>
+  
+  <developers>
+    <developer><name>Marek Jagielski</name><email>marek.jagielski@gmail.com</email></developer>
+  </developers>
+  
+  <issueManagement>
+    <url>https://github.com/systemincloud/thriftr/issues</url>
+  </issueManagement>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.build.timestamp.format>yyyy-MM-dd</maven.build.timestamp.format>
+    <date>${maven.build.timestamp}</date>
+  </properties>
 
   <build>
     <plugins>
+      <plugin><artifactId>maven-resources-plugin</artifactId><version>3.0.1</version>
+        <executions>  
+          <execution><id>copy-resources</id><phase>validate</phase>  
+            <goals><goal>copy-resources</goal></goals>  
+            <configuration>  
+              <outputDirectory>${basedir}</outputDirectory>  
+              <resources>  
+                <resource><directory>resources</directory><filtering>true</filtering></resource>  
+              </resources>  
+            </configuration>  
+          </execution>  
+        </executions>  
+      </plugin>  
       <plugin><groupId>org.codehaus.mojo</groupId><artifactId>exec-maven-plugin</artifactId><version>1.4.0</version>
         <configuration>
           <executable>R</executable>
@@ -25,13 +60,15 @@
           <execution><id>check</id><phase>verify</phase>
             <goals><goal>exec</goal></goals>
             <configuration>
-              <arguments><argument>CMD</argument><argument>check</argument><argument>${project.basedir}/target/${project.artifactId}_${project.version}.tar.gz</argument><argument>--output=${basedir}/target</argument></arguments>
+              <arguments><argument>CMD</argument><argument>check</argument><argument>--as-cran</argument><argument>${project.basedir}/target/${project.artifactId}_${project.version}.tar.gz</argument><argument>--output=${basedir}/target</argument></arguments>
             </configuration>
           </execution>
           <execution><id>install</id><phase>install</phase>
             <goals><goal>exec</goal></goals>
             <configuration>
-              <arguments><argument>CMD</argument><argument>INSTALL</argument><argument>${project.artifactId}</argument></arguments>
+              <arguments><argument>CMD</argument><argument>INSTALL</argument><argument>${project.artifactId}</argument>
+                                                                             <argument>--with-keep.source</argument>
+                                                                             <argument>--no-multiarch</argument></arguments>
             </configuration>
           </execution>
         </executions>

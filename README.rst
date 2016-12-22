@@ -7,42 +7,26 @@ ThriftR is a pure R implementation of
 This project is a R clone of `ThriftPy <https://github.com/eleme/thriftpy>`_.
 
 
-Installation
-============
+How to Use
+==========
 
 .. code:: R
 
-    $ install.packages("https://s3.amazonaws.com/com-systemincloud-s3-m2/releases/thriftr/thriftr/0.1.0/thriftr-0.1.0.tar.gz", repos=NULL, method="libcurl")
+    library(thriftr)
+    
+The examples directory contains several different examples.
 
-Code Demo
+A simple example is found at the end of this document
+
+Resources
 =========
 
-ThriftR make it super easy to write client code with thrift.
+The GitHub page for RLY can be found at:
 
-TODO
+https://github.com/systemincloud/thriftr
 
-Features
-========
+Example
+=======
 
-Currently ThriftR have these features:
-
-TODO
-
-
-
-Contribute
-==========
-
-TODO
-
-
-Contributors
-============
-
-TODO
-
-
-Changelog
-=========
-
-TODO
+.. code:: R
+	library(rly)

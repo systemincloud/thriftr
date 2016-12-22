@@ -1,6 +1,8 @@
 ^\.project$
 ^\.settings$
 ^\.gitignore$
-^\.pydevproject$
+^pom.xml$
+^resources
 ^target$
-^examples$
+^.*\.Rproj$
+^\.Rproj\.user$
