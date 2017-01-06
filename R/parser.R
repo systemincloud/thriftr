@@ -2,6 +2,14 @@
 
 #' Load thrift file as a module.
 #'
+#' @param path R6 class containing lex rules
+#' @param module_name list of arguments that should be passed to constructor
+#' @param include_dirs on and off debug mode
+#' 
+#' @return Thrift module
+#' 
+#' @importFrom R6 R6Class
+#' 
 #' @export
 load <- function(path, module_name=NA, include_dirs=NA) {
   thrift = parse(path, module_name, include_dirs=include_dirs)
@@ -236,3 +244,50 @@ Lexer <- R6Class("Lexer",
     }
   )
 )
+
+Parser <- R6Class("Parser",
+  public = list(
+    thrift_stack  = list(),
+    include_dirs_ = list('.'),
+    thrift_cache  = new.env(hash=TRUE),
+
+    tokens   = TOKENS,
+    literals = LITERALS,
+    
+    p_error = function(p) {
+      if(is.null(p)) stop("Grammar error at EOF")
+      else           stop(sprintf("Grammar error %s at '%s'", p$value, p$lineno))
+    },
+    p_start = function(doc='start : header definition', p) {
+    },
+    p_header = function(doc='header : header_unit_ header
+                                    |', p) {
+    },
+    p_header_unit_ = function(doc="header_unit_ : header_unit ';'
+                                                | header_unit", p) {
+    },
+    p_header_unit = function(doc='header_unit : include
+                                              | namespace', p) {
+    },
+    p_include = function(doc='include : INCLUDE LITERAL', p) {
+      thrift <- tail(thrift_stack, 1)[[1]]
+      if(is.null(thrift$thrift_file__))
+        stop('Unexcepted include statement while loading from file like object.')
+      replace_include_dirs <- append(include_dirs_, thrift$thrift_file__)
+      for(include_dir in replace_include_dirs) {
+        if(dir.exists(file.path(include_dir, p[[3]]))) {
+#          child <- parse(path)
+#          setattr(thrift, child.__name__, child)
+#          add_thrift_meta('includes', child)
+          return()
+        }
+      }
+      stop(sprintf('Couldn\'t include thrift %s in any directories provided', p[[3]]))
+    }
+  )
+)
+
+
+parse = function() {
+  
+}

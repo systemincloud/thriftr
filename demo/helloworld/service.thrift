@@ -1,4 +1,0 @@
-
-service Service {
-    string say(),
-}

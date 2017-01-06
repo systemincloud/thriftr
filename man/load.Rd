@@ -7,6 +7,16 @@ Load thrift file as a module.}
 \usage{
 load(path, module_name = NA, include_dirs = NA)
 }
+\arguments{
+\item{path}{R6 class containing lex rules}
+
+\item{module_name}{list of arguments that should be passed to constructor}
+
+\item{include_dirs}{on and off debug mode}
+}
+\value{
+Thrift module
+}
 \description{
 parser.R
 Load thrift file as a module.
