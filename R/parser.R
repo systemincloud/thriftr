@@ -287,7 +287,19 @@ Parser <- R6Class("Parser",
   )
 )
 
-
+#' Parse a single thrift file to module object, e.g.::
+#'
+#' >>> from thriftpy.parser.parser import parse
+#' >>> note_thrift = parse("path/to/note.thrift")
+#' <module 'note_thrift' (built-in)>
+#' 
+#' @return Thrift module
+#' 
+#' @importFrom R6 R6Class
+#' @importFrom rly lex
+#' @importFrom rly yacc
+#' 
+#' @export
 parse = function() {
   
 }
