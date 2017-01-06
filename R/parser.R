@@ -1,18 +1,21 @@
 #' parser.R
 
-#' Load thrift file as a module.
+#' Load thrift file as a R6 instance.
 #'
-#' @param path R6 class containing lex rules
-#' @param module_name list of arguments that should be passed to constructor
-#' @param include_dirs on and off debug mode
+#' The module loaded and objects inside may only be pickled if module_name
+#' was provided.
+#'    
+#' @param path file path to parse, should be a string ending with '.thrift'
+#' @param module_name the name for parsed module, the default is the basename
+#'                    without extension of `path`
+#' @param include_dirs directories to find thrift files while processing
+#'                     the `include` directive, by default: ['.']
 #' 
-#' @return Thrift module
-#' 
-#' @importFrom R6 R6Class
+#' @return Thrift R6 class instance
 #' 
 #' @export
-load <- function(path, module_name=NA, include_dirs=NA) {
-  thrift = parse(path, module_name, include_dirs=include_dirs)
+thriftr_load <- function(path, module_name=NA, include_dirs=NA) {
+  thrift <- thriftr_parse(path, module_name, include_dirs=include_dirs)
   return(thrift)
 }
 
@@ -287,19 +290,29 @@ Parser <- R6Class("Parser",
   )
 )
 
-#' Parse a single thrift file to module object, e.g.::
-#'
-#' >>> from thriftpy.parser.parser import parse
-#' >>> note_thrift = parse("path/to/note.thrift")
-#' <module 'note_thrift' (built-in)>
-#' 
-#' @return Thrift module
+#' Parse a single thrift file to R6 class instance
 #' 
 #' @importFrom R6 R6Class
 #' @importFrom rly lex
 #' @importFrom rly yacc
 #' 
-#' @export
-parse = function() {
+#' @param path file path to parse, should be a string ending with '.thrift'
+#' @param module_name the name for parsed module, the default is the basename
+#'                    without extension of `path`
+#' @param include_dirs directories to find thrift files while processing
+#'                     the `include` directive, by default: ['.']
+#' @param lexer rly lexer to use, if not provided, `parse` will new one
+#' @param parser rly parser to use, if not provided, `parse` will new one
+#' @param enable_cache if this is set to be `TRUE`, parsed module will be
+#'                     cached, this is enabled by default. If `module_name`
+#'                     is provided, use it as cache key, else use the `path`
+#' 
+#' @return Thrift module
+thriftr_parse = function(path, 
+                         module_name=NA, 
+                         include_dirs=NA, 
+                         lexer=NA, 
+                         parser=NA, 
+                         enable_cache=TRUE) {
   
 }
