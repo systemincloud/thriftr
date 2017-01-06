@@ -8,7 +8,7 @@
   <packaging>pom</packaging>
   <name>Apache Thrift Client</name>
   
-  <description>R implementation of Apache Thrift</description>
+  <description>R implementation of Apache Thrift.</description>
   <url>https://github.com/systemincloud/thriftr</url>
 
   <organization>
