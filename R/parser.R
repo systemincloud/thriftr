@@ -250,10 +250,6 @@ Lexer <- R6Class("Lexer",
 
 Parser <- R6Class("Parser",
   public = list(
-    thrift_stack  = list(),
-    include_dirs_ = list('.'),
-    thrift_cache  = new.env(hash=TRUE),
-
     tokens   = TOKENS,
     literals = LITERALS,
     
@@ -290,6 +286,10 @@ Parser <- R6Class("Parser",
   )
 )
 
+thrift_stack  <- list()
+include_dirs_ <- list('.')
+thrift_cache  <- new.env(hash=TRUE)
+
 #' Parse a single thrift file to R6 class instance
 #' 
 #' @importFrom R6 R6Class
@@ -314,5 +314,18 @@ thriftr_parse = function(path,
                          lexer=NA, 
                          parser=NA, 
                          enable_cache=TRUE) {
+                       
+  # dead include checking on current stack
+  for(thrift in thrift_stack) {
+    if(!is.null(thrift$thrift_file__) && path == thrift$thrift_file__)
+      stop(sprintf('Dead including on %s', path))
+  }
+  
+  cache_key <- if(is.na(module_name)) path else module_name
+  
+  if(enable_cache && cache_key %in% names(thrift_cache))
+    return(thrift_cache[[cache_key]])
+  
+  if(is.na(lexer)) lexer <- lex(Lexer)
   
 }
