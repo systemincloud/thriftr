@@ -252,9 +252,7 @@ Lexer <- R6Class("Lexer",
 
 Parser <- R6Class("Parser",
   public = list(
-    tokens   = TOKENS,
-    literals = LITERALS,
-    
+    tokens = TOKENS,   
     p_error = function(p) {
       if(is.null(p)) stop("Grammar error at EOF")
       else           stop(sprintf("Grammar error %s at '%s'", p$value, p$lineno))
@@ -284,6 +282,48 @@ Parser <- R6Class("Parser",
         }
       }
       stop(sprintf('Couldn\'t include thrift %s in any directories provided', p[[3]]))
+    },
+    p_namespace = function(doc='namespace : NAMESPACE namespace_scope IDENTIFIER', p) {
+    },
+    p_namespace_scope = function(doc='namespace_scope : "*"
+                                                      | IDENTIFIER', p) {
+    },
+    p_sep = function(doc='sep : ","
+                              | ";"', p) {
+    },
+    p_definition = function(doc='definition : definition definition_unit_
+                                            |', p) {
+    },
+    p_definition_unit_ = function(doc='definition_unit_ : definition_unit ";"
+                                                        | definition_unit', p) {
+    },
+    p_definition_unit = function(doc='definition_unit : const
+                                                      | ttype', p) {
+    },
+    p_const = function(doc='const : CONST field_type IDENTIFIER "=" const_value
+                                  | CONST field_type IDENTIFIER "=" const_value sep', p) {
+    },
+    p_const_value = function(doc='const_value : INTCONSTANT
+                                              | DUBCONSTANT
+                                              | LITERAL
+                                              | BOOLCONSTANT
+                                              | const_list
+                                              | const_map
+                                              | const_ref', p) {
+    },
+    p_const_list = function(doc='const_list : "[" const_list_seq "]" ', p) {
+    },
+    p_const_list_seq = function(doc='const_list_seq : const_value sep const_list_seq
+                                                    | const_value const_list_seq
+                                                    |', p) {
+    },
+    p_const_map = function(doc='const_map : "{" const_map_seq "}" ', p) {
+    },
+    p_const_map_seq = function(doc='const_map_seq : const_map_item sep const_map_seq
+                                                  | const_map_item const_map_seq
+                                                  |', p) {
+    },
+    p_const_map_item = function(doc='const_map_item : const_value ":" const_value ', p) {
     }
   )
 )
@@ -328,6 +368,7 @@ thriftr_parse = function(path,
   if(enable_cache && cache_key %in% names(thrift_cache))
     return(thrift_cache[[cache_key]])
   
-  if(is.na(lexer)) lexer <- lex(Lexer)
+  if(is.na(lexer))  lexer  <- lex(Lexer)
+  if(is.na(parser)) parser <- yacc(Parser)
   
 }
