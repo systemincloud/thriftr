@@ -324,6 +324,94 @@ Parser <- R6Class("Parser",
                                                   |', p) {
     },
     p_const_map_item = function(doc='const_map_item : const_value ":" const_value ', p) {
+    },
+    p_const_ref = function(doc='const_ref : IDENTIFIER', p) {
+    },
+    p_ttype = function(doc='ttype : typedef
+                                  | enum
+                                  | struct
+                                  | union
+                                  | exception
+                                  | service', p) {
+    },
+    p_typedef = function(doc='typedef : TYPEDEF field_type IDENTIFIER', p) {
+    },
+    p_enum = function(doc='enum : ENUM IDENTIFIER "{" enum_seq "}" ', p) {
+    },
+    p_enum_seq = function(doc='enum_seq : enum_item sep enum_seq
+                                        | enum_item enum_seq
+                                        |', p) {
+    },
+    p_enum_item = function(doc='enum_item : IDENTIFIER "=" INTCONSTANT
+                                          | IDENTIFIER
+                                          |', p) {
+    },
+    p_struct = function(doc='struct : seen_struct "{" field_seq "}" ', p) {
+    },
+    p_seen_struct = function(doc='seen_struct : STRUCT IDENTIFIER ', p) {
+    },
+    p_union = function(doc='union : seen_union "{" field_seq "}" ', p) {
+    },
+    p_seen_union = function(doc='seen_union : UNION IDENTIFIER ', p) {
+    },
+    p_exception = function(doc='exception : EXCEPTION IDENTIFIER "{" field_seq "}" ', p) {
+    },
+    p_service = function(doc='service : SERVICE IDENTIFIER "{" function_seq "}"
+                                      | SERVICE IDENTIFIER EXTENDS IDENTIFIER "{" function_seq "}"', p) {
+    },
+    p_function = function(doc='function : ONEWAY function_type IDENTIFIER "(" field_seq ")" throws
+                                        | ONEWAY function_type IDENTIFIER "(" field_seq ")"
+                                        | function_type IDENTIFIER "(" field_seq ")" throws
+                                        | function_type IDENTIFIER "(" field_seq ")" ', p) {
+    },
+    p_function_seq = function(doc='function_seq : function sep function_seq
+                                                | function function_seq
+                                                |', p) {
+    },
+    p_throws = function(doc='throws : THROWS "(" field_seq ")" ', p) {
+    },
+    p_function_type = function(doc='function_type : field_type
+                                                  | VOID', p) {
+    },
+    p_field_seq = function(doc='field_seq : field sep field_seq
+                                          | field field_seq
+                                          |', p) {
+    },
+    p_field = function(doc='field : field_id field_req field_type IDENTIFIER
+                                  | field_id field_req field_type IDENTIFIER "=" const_value', p) {
+    },
+    p_field_id = function(doc='field_id : INTCONSTANT ":" ', p) {
+    },
+    p_field_req = function(doc='field_req : REQUIRED
+                                          | OPTIONAL
+                                          |', p) {
+    },
+    p_field_type = function(doc='field_type : ref_type
+                                            | definition_type', p) {
+    },
+    p_ref_type = function(doc='ref_type : IDENTIFIER', p) {
+    },
+    p_base_type = function(doc='base_type : BOOL
+                                          | BYTE
+                                          | I16
+                                          | I32
+                                          | I64
+                                          | DOUBLE
+                                          | STRING
+                                          | BINARY', p) {
+    },
+    p_container_type = function(doc='container_type : map_type
+                                                    | list_type
+                                                    | set_type', p) {
+    },
+    p_map_type = function(doc='map_type : MAP "<" field_type "," field_type ">" ', p) {
+    },
+    p_list_type = function(doc='list_type : LIST "<" field_type ">" ', p) {
+    },
+    p_set_type = function(doc='set_type : SET "<" field_type ">" ', p) {
+    },
+    p_definition_type = function(doc='definition_type : base_type
+                                                      | container_type', p) {
     }
   )
 )
