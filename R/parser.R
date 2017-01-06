@@ -189,8 +189,10 @@ Lexer <- R6Class("Lexer",
       t$lexer$lineno <- t$lexer$lineno + lengths(regmatches(t$value, gregexpr("a", t$value)))
       return(NULL)
     },
-    t_ignore_UNIXCOMMENT = '\\#[^\\n]*',
-    t_ignore_COMMENT = '\\/\\/[^\\n]*',
+    t_ignore_UNIXCOMMENT = function(re='\\#[^\\n]*', t) {
+    },
+    t_ignore_COMMENT = function(re='\\/\\/[^\\n]*', t) {
+    },
     t_BOOLCONSTANT = function(re='true|false', t) {
       t$value <- t$value == 'true'
       return(t)
