@@ -459,4 +459,9 @@ thriftr_parse = function(path,
   if(is.na(lexer))  lexer  <- lex(Lexer)
   if(is.na(parser)) parser <- yacc(Parser)
   
+  if(!is.na(include_dirs)) include_dirs_ <- include_dirs
+  
+  if(!endsWith(path, '.thrift'))
+    stop('Path should end with .thrift')
+  
 }
