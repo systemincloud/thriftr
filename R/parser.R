@@ -239,11 +239,11 @@ Lexer <- R6Class("Lexer",
       return(t)
     },
     t_IDENTIFIER = function(re='[a-zA-Z_](\\.[a-zA-Z_0-9]|[a-zA-Z_0-9])*', t) {
-      if(t$value %in% keywords) {
+      if(t$value %in% KEYWORDS) {
         t$type <- toupper(t$value)
         return(t)
       }
-      if(t$value %in% thrift_reserved_keywords)
+      if(t$value %in% THRIFT_RESERVED_KEYWORDS)
         stop(sprintf('Cannot use reserved language keyword: %s at line %d', t$value, t$lineno))
       return(t)
     }
@@ -464,4 +464,21 @@ thriftr_parse = function(path,
   if(!endsWith(path, '.thrift'))
     stop('Path should end with .thrift')
   
+  data <- readChar(path, file.info(path)$size)
+  
+  if(!is.na(module_name) && !endsWith(module_name, '_thrift'))
+    stop('ThriftPy can only generate module with \'_thrift\' suffix')
+  
+  if(is.na(module_name)) {
+    module_name <- basename(path)
+  }
+  
+  thrift <- new.env()
+  thrift_stack <- append(thrift_stack, thrift)
+  parser$parse(data, lexer)
+  thrift_stack <- tail(thrift_stack, 1)
+  
+  if(enable_cache) thrift_cache[[cache_key]] <- thrift
+  
+  return(thrift)
 }
