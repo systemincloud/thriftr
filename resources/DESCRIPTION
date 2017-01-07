@@ -20,4 +20,5 @@ Depends:
     rly
 RoxygenNote: 5.0.1
 Collate:
+    'rpc.R'
     'parser.R'
