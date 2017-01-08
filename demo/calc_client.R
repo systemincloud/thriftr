@@ -4,7 +4,7 @@ library(thriftr)
 
 calc_thrift <- thriftr::thriftr_load("calc/calc.thrift", module_name="calc_thrift")
 
-cal <- make_client()
+cal <- make_client(calc_thrift)
 
 #a <- cal$mult(5, 2)
 #b <- cal$sub(7, 3)

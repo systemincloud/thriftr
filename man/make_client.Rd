@@ -3,12 +3,36 @@
 \name{make_client}
 \alias{make_client}
 \title{rpc.R
-Create ...}
+Create client side thrift API}
 \usage{
-make_client()
+make_client(service, host = "localhost", port = 9090,
+  proto_factory = TBinaryProtocolFactory$new(),
+  trans_factory = TBufferedTransportFactory$new(), timeout = NA,
+  cafile = NA, ssl_context = NA, certfile = NA, keyfile = NA)
+}
+\arguments{
+\item{service}{a}
+
+\item{host}{a}
+
+\item{port}{a}
+
+\item{proto_factory}{a}
+
+\item{trans_factory}{a}
+
+\item{timeout}{a}
+
+\item{cafile}{a}
+
+\item{ssl_context}{a}
+
+\item{certfile}{a}
+
+\item{keyfile}{a}
 }
 \description{
 rpc.R
-Create ...
+Create client side thrift API
 }
 

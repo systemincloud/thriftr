@@ -12,7 +12,7 @@
 #'                     the `include` directive, by default: ['.']
 #' 
 #' @return Thrift R6 class instance
-#' 
+#'
 #' @export
 thriftr_load <- function(path, module_name=NA, include_dirs=NA) {
   thrift <- thriftr_parse(path, module_name, include_dirs=include_dirs)
@@ -250,6 +250,7 @@ Lexer <- R6Class("Lexer",
   )
 )
 
+#' @importFrom utils tail
 Parser <- R6Class("Parser",
   public = list(
     tokens = TOKENS,   
