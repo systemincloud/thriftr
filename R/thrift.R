@@ -31,5 +31,10 @@
 #' @export
 TClient <- R6Class("TClient",
   public = list(
+    service = NA,
+    iprot   = NA,
+    oprot   = NA,
+    initialize = function(service, iprot, oprot=TRUE) {
+    }
   )
 )
