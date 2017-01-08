@@ -273,6 +273,8 @@ Lexer <- R6Class("Lexer",
 #' @importFrom utils tail
 Parser <- R6Class("Parser",
   public = list(
+    thrift_stack = list(),
+    
     tokens = TOKENS,   
     p_error = function(p) {
       if(is.null(p)) stop("Grammar error at EOF")
@@ -290,7 +292,9 @@ Parser <- R6Class("Parser",
                                               | namespace', p) {
     },
     p_include = function(doc='include : INCLUDE LITERAL', p) {
-      thrift <- tail(thrift_stack, 1)[[1]]
+      # TODO
+      print("p_include")
+      thrift <- tail(Parser$thrift_stack, 1)[[1]]
       if(is.null(thrift$thrift_file__))
         stop('Unexcepted include statement while loading from file like object.')
       replace_include_dirs <- append(include_dirs_, thrift$thrift_file__)
@@ -305,9 +309,12 @@ Parser <- R6Class("Parser",
       stop(sprintf('Couldn\'t include thrift %s in any directories provided', p[[3]]))
     },
     p_namespace = function(doc='namespace : NAMESPACE namespace_scope IDENTIFIER', p) {
+      # TODO
+      print("p_namespace")
     },
     p_namespace_scope = function(doc='namespace_scope : "*"
                                                       | IDENTIFIER', p) {
+      p$set(1, p$get(2))
     },
     p_sep = function(doc='sep : ","
                               | ";"', p) {
@@ -323,6 +330,8 @@ Parser <- R6Class("Parser",
     },
     p_const = function(doc='const : CONST field_type IDENTIFIER "=" const_value
                                   | CONST field_type IDENTIFIER "=" const_value sep', p) {
+      # TODO
+      print("p_const")
     },
     p_const_value = function(doc='const_value : INTCONSTANT
                                               | DUBCONSTANT
@@ -331,22 +340,31 @@ Parser <- R6Class("Parser",
                                               | const_list
                                               | const_map
                                               | const_ref', p) {
+      p$set(1, p$get(2))
     },
     p_const_list = function(doc='const_list : "[" const_list_seq "]" ', p) {
+      p$set(1, p$get(3))
     },
     p_const_list_seq = function(doc='const_list_seq : const_value sep const_list_seq
                                                     | const_value const_list_seq
                                                     |', p) {
+      private$parse_seq(p)
     },
     p_const_map = function(doc='const_map : "{" const_map_seq "}" ', p) {
+      # TODO
+      print("p_const_map")
     },
     p_const_map_seq = function(doc='const_map_seq : const_map_item sep const_map_seq
                                                   | const_map_item const_map_seq
                                                   |', p) {
+      private$parse_seq(p)
     },
     p_const_map_item = function(doc='const_map_item : const_value ":" const_value ', p) {
+      p$set(1, list(p$get(2), p$get(4)))
     },
     p_const_ref = function(doc='const_ref : IDENTIFIER', p) {
+      # TODO
+      print("p_const_ref")
     },
     p_ttype = function(doc='ttype : typedef
                                   | enum
@@ -356,61 +374,97 @@ Parser <- R6Class("Parser",
                                   | service', p) {
     },
     p_typedef = function(doc='typedef : TYPEDEF field_type IDENTIFIER', p) {
+      # TODO
+      print("p_typedef")
     },
     p_enum = function(doc='enum : ENUM IDENTIFIER "{" enum_seq "}" ', p) {
+      # TODO
+      print("p_enum")
     },
     p_enum_seq = function(doc='enum_seq : enum_item sep enum_seq
                                         | enum_item enum_seq
                                         |', p) {
+      private$parse_seq(p)
     },
     p_enum_item = function(doc='enum_item : IDENTIFIER "=" INTCONSTANT
                                           | IDENTIFIER
                                           |', p) {
+           if(p$length() == 4) p$set(1, list(p$get(2), p$get(4)))
+      else if(p$length() == 2) pset(1, list(p$get(2), NULL))
     },
     p_struct = function(doc='struct : seen_struct "{" field_seq "}" ', p) {
+      # TODO
+      print("p_struct")
     },
     p_seen_struct = function(doc='seen_struct : STRUCT IDENTIFIER ', p) {
+      val <- private$make_empty_struct(p$get(3))
+#      tail(Parser$thrift_stack, 1)[[1]]$set("public", p$get(3), val)
+      tail(Parser$thrift_stack, 1)[[1]]$add_public(p$get(3), val)
+      p$set(1, val)
     },
     p_union = function(doc='union : seen_union "{" field_seq "}" ', p) {
+      # TODO
+      print("p_union")
     },
     p_seen_union = function(doc='seen_union : UNION IDENTIFIER ', p) {
+      # TODO
+      print("p_seen_union")
     },
     p_exception = function(doc='exception : EXCEPTION IDENTIFIER "{" field_seq "}" ', p) {
+      # TODO
+      print("p_exception")
     },
     p_service = function(doc='service : SERVICE IDENTIFIER "{" function_seq "}"
                                       | SERVICE IDENTIFIER EXTENDS IDENTIFIER "{" function_seq "}"', p) {
+      # TODO
+      print("p_service")
     },
     p_function = function(doc='function : ONEWAY function_type IDENTIFIER "(" field_seq ")" throws
                                         | ONEWAY function_type IDENTIFIER "(" field_seq ")"
                                         | function_type IDENTIFIER "(" field_seq ")" throws
                                         | function_type IDENTIFIER "(" field_seq ")" ', p) {
+      # TODO
+      print("p_function")
     },
     p_function_seq = function(doc='function_seq : function sep function_seq
                                                 | function function_seq
                                                 |', p) {
+      private$parse_seq(p)
     },
     p_throws = function(doc='throws : THROWS "(" field_seq ")" ', p) {
+      p$set(1, p$get(4))
     },
     p_function_type = function(doc='function_type : field_type
                                                   | VOID', p) {
+      # TODO
+      print("p_function_type")
     },
     p_field_seq = function(doc='field_seq : field sep field_seq
                                           | field field_seq
                                           |', p) {
+      private$parse_seq(p)
     },
     p_field = function(doc='field : field_id field_req field_type IDENTIFIER
                                   | field_id field_req field_type IDENTIFIER "=" const_value', p) {
+      # TODO
+      print("p_field")
     },
     p_field_id = function(doc='field_id : INTCONSTANT ":" ', p) {
+      p$set(1, p$get(2))
     },
     p_field_req = function(doc='field_req : REQUIRED
                                           | OPTIONAL
                                           |', p) {
+      # TODO
+      print("p_field_req")
     },
     p_field_type = function(doc='field_type : ref_type
                                             | definition_type', p) {
+      p$set(1, p$get(2))
     },
     p_ref_type = function(doc='ref_type : IDENTIFIER', p) {
+      # TODO
+      print("p_ref_type")
     },
     p_base_type = function(doc='base_type : BOOL
                                           | BYTE
@@ -420,24 +474,56 @@ Parser <- R6Class("Parser",
                                           | DOUBLE
                                           | STRING
                                           | BINARY', p) {
+      # TODO
+      print("p_base_type")
     },
     p_container_type = function(doc='container_type : map_type
                                                     | list_type
                                                     | set_type', p) {
+      p$set(1, p$get(2))
     },
     p_map_type = function(doc='map_type : MAP "<" field_type "," field_type ">" ', p) {
+      # TODO
+      print("p_map_type")
     },
     p_list_type = function(doc='list_type : LIST "<" field_type ">" ', p) {
+      # TODO
+      print("p_list_type")
     },
     p_set_type = function(doc='set_type : SET "<" field_type ">" ', p) {
+      # TODO
+      print("p_set_type")
     },
     p_definition_type = function(doc='definition_type : base_type
                                                       | container_type', p) {
+      p$set(1, p$get(2))
+    }
+  ),
+  private = list(
+    parse_seq = function(p) {
+      print("parse_seq")
+      print(p$length())
+      if(p$length() >= 1) print(p$get(1))
+      if(p$length() >= 2) print(p$get(2))
+      if(p$length() >= 3) print(p$get(3))
+      if(p$length() >= 4) print(p$get(4))
+           if(p$length() == 4) p$set(1, list(p$get(2)) + p$get(4))
+      else if(p$length() == 3) p$set(1, list(p$get(2)) + p$get(3))
+      else if(p$length() == 1) p$set(1, list())
+    },
+    make_empty_struct = function(name, ttype=TType$STRUCT) {
+      cls <- R6Class(name,
+                     inherit=TPayload,
+                     lock=FALSE, 
+                     public=list(
+                       module=tail(Parser$thrift_stack, 1)[[1]]$name,
+                       ttype=ttype
+                     ))$new()
+      return(cls)
     }
   )
 )
 
-thrift_stack  <- list()
 include_dirs_ <- list('.')
 thrift_cache  <- new.env(hash=TRUE)
 
@@ -467,8 +553,8 @@ thriftr_parse = function(path,
                          enable_cache=TRUE) {
                        
   # dead include checking on current stack
-  for(thrift in thrift_stack) {
-    if(!is.null(thrift$thrift_file__) && path == thrift$thrift_file__)
+  for(thrift in Parser$thrift_stack) {
+    if(!is.null(thrift$thrift_file) && path == thrift$thrift_file)
       stop(sprintf('Dead including on %s', path))
   }
   
@@ -491,13 +577,19 @@ thriftr_parse = function(path,
     stop('ThriftPy can only generate module with \'_thrift\' suffix')
   
   if(is.na(module_name)) {
-    module_name <- basename(path)
+    module_name <- strsplit(basename(path), "\\.")[[1]]
   }
   
-  thrift <- new.env()
-  thrift_stack <- append(thrift_stack, thrift)
+  thrift <- R6Class(module_name, 
+                    lock=FALSE, 
+                    public=list(thrift_file=path,
+                                add_public = function(name, obj) {
+                                  self[[name]] <- obj
+                                  environment(self[[name]]) <- environment(self$add_public)
+                                }))$new()
+  Parser$thrift_stack <- append(Parser$thrift_stack, thrift)
   parser$parse(data, lexer)
-  thrift_stack <- tail(thrift_stack, 1)
+  Parser$thrift_stack <- tail(Parser$thrift_stack, 1)
   
   if(enable_cache) thrift_cache[[cache_key]] <- thrift
   
