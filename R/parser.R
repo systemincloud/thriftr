@@ -455,8 +455,8 @@ Parser <- R6Class("Parser",
     p_field_req = function(doc='field_req : REQUIRED
                                           | OPTIONAL
                                           |', p) {
-      # TODO
-      print("p_field_req")
+           if(p$length() == 2) p$set(1, p$get(2) == 'required')
+      else if(p$length() == 1) p$set(1, FALSE)  # default: required=False
     },
     p_field_type = function(doc='field_type : ref_type
                                             | definition_type', p) {
