@@ -446,8 +446,16 @@ Parser <- R6Class("Parser",
     },
     p_field = function(doc='field : field_id field_req field_type IDENTIFIER
                                   | field_id field_req field_type IDENTIFIER "=" const_value', p) {
-      # TODO
-      print("p_field")
+      val <- NA
+      if(p$length() == 7) {
+        val <- tryCatch({
+          private$cast(p$get(4))(p$get(7))
+        }, error = function(e) {
+          stop(sprintf('Type error for field %s at line %d', p$get(5), p$lineno))
+        })
+      }
+      
+      p$set(1, list(p$get(2), p$get(3), p$get(4), p$get(5), val))
     },
     p_field_id = function(doc='field_id : INTCONSTANT ":" ', p) {
       p$set(1, p$get(2))
@@ -474,8 +482,14 @@ Parser <- R6Class("Parser",
                                           | DOUBLE
                                           | STRING
                                           | BINARY', p) {
-      # TODO
-      print("p_base_type")
+      if(p$get(2) == 'bool')   p$set(1, TType$BOOL)
+      if(p$get(2) == 'byte')   p$set(1, TType$BYTE)
+      if(p$get(2) == 'i16')    p$set(1, TType$I16)
+      if(p$get(2) == 'i32')    p$set(1, TType$I32)
+      if(p$get(2) == 'i64')    p$set(1, TType$I64)
+      if(p$get(2) == 'double') p$set(1, TType$DOUBLE)
+      if(p$get(2) == 'string') p$set(1, TType$STRING)
+      if(p$get(2) == 'binary') p$set(1, TType$BINARY)
     },
     p_container_type = function(doc='container_type : map_type
                                                     | list_type
@@ -491,8 +505,7 @@ Parser <- R6Class("Parser",
       print("p_list_type")
     },
     p_set_type = function(doc='set_type : SET "<" field_type ">" ', p) {
-      # TODO
-      print("p_set_type")
+      p$set(1, list(TType$SET, p$get(4)))
     },
     p_definition_type = function(doc='definition_type : base_type
                                                       | container_type', p) {
@@ -510,6 +523,61 @@ Parser <- R6Class("Parser",
            if(p$length() == 4) p$set(1, list(p$get(2)) + p$get(4))
       else if(p$length() == 3) p$set(1, list(p$get(2)) + p$get(3))
       else if(p$length() == 1) p$set(1, list())
+    },
+    cast = function(t) {
+      if(t == TType$BOOL)        return(private$cast_bool)
+      if(t == TType$BYTE)        return(private$cast_byte)
+      if(t == TType$I16)         return(private$cast_i16)
+      if(t == TType$I32)         return(private$cast_i32)
+      if(t == TType$I64)         return(private$cast_i64)
+      if(t == TType$DOUBLE)      return(private$cast_double)
+      if(t == TType$STRING)      return(private$cast_string)
+      if(t == TType$BINARY)      return(private$cast_binary)
+      if(t[[1]] == TType$LIST)   return(private$cast_list(t))
+      if(t[[1]] == TType$SET)    return(private$cast_set(t))
+      if(t[[1]] == TType$MAP)    return(private$cast_map(t))
+      if(t[[1]] == TType$I32)    return(private$cast_enum(t))
+      if(t[[1]] == TType$STRUCT) return(private$cast_struct(t))
+    },
+    cast_bool = function(v) {
+      # TODO
+    },
+    cast_byte = function(v) {
+      # TODO
+    },
+    cast_i16 = function(v) {
+      # TODO
+    },
+    cast_i32 = function(v) {
+      # TODO
+    },
+    cast_i64 = function(v) {
+      # TODO
+    },
+    cast_double = function(v) {
+      # TODO
+    },
+    cast_string = function(v) {
+      if(typeof(v) != "character") stop()
+      return(v)
+    },
+    cast_binary = function(v) {
+      # TODO
+    },
+    cast_list = function(v) {
+      # TODO
+    },
+    cast_set = function(v) {
+      # TODO
+    },
+    cast_map = function(v) {
+      # TODO
+    },
+    cast_enum = function(v) {
+      # TODO
+    },
+    cast_struct = function(v) {
+      # TODO
     },
     make_empty_struct = function(name, ttype=TType$STRUCT) {
       cls <- R6Class(name,
