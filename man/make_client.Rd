@@ -2,8 +2,7 @@
 % Please edit documentation in R/rpc.R
 \name{make_client}
 \alias{make_client}
-\title{rpc.R
-Create client side thrift API}
+\title{Create client side thrift API}
 \usage{
 make_client(service, host = "localhost", port = 9090,
   proto_factory = TBinaryProtocolFactory$new(),
@@ -32,7 +31,6 @@ make_client(service, host = "localhost", port = 9090,
 \item{keyfile}{a}
 }
 \description{
-rpc.R
 Create client side thrift API
 }
 

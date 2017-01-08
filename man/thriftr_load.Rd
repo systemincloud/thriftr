@@ -2,8 +2,7 @@
 % Please edit documentation in R/parser.R
 \name{thriftr_load}
 \alias{thriftr_load}
-\title{parser.R
-Load thrift file as a R6 instance.}
+\title{Load thrift file as a R6 instance.}
 \usage{
 thriftr_load(path, module_name = NA, include_dirs = NA)
 }

@@ -20,6 +20,7 @@ Depends:
     rly
 RoxygenNote: 5.0.1
 Collate:
+    'transport.R'
     'protocol.R'
     'rpc.R'
     'parser.R'
