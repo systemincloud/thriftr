@@ -6,6 +6,7 @@ library(thriftr)
 context("type")
 
 test_that("test_set", {
-#  s <- thriftr_load("type.thrift")
+  s <- thriftr_load("type.thrift")
+  print(names(s))
 #  assert s.Set.thrift_spec == {1: (TType.SET, "a_set", TType.STRING, True)}
 })

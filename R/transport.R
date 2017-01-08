@@ -83,7 +83,7 @@ TSSLSocket <- R6Class("TSSLSocket",
     # @param certfile(str)        The certfile string must be the path to a
     # single file in PEM format containing the certificate as well as
     # any number of CA certificates needed to establish the
-    # certificate’s authenticity.
+    # certificate's authenticity.
     # @param keyfile(str)         The keyfile string, if not present,
     # the private key will be taken from certfile as well.
     # @param ciphers(list<str>)   The cipher suites to allow
