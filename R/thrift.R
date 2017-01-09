@@ -20,28 +20,25 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-TType <- R6Class("TType",
-  public = list(
-    STOP   = 0,
-    VOID   = 1,
-    BOOL   = 2,
-    BYTE   = 3,
-    I08    = 3,
-    DOUBLE = 4,
-    I16    = 6,
-    I32    = 8,
-    I64    = 10,
-    STRING = 11,
-    UTF7   = 11,
-    BINARY = 11,  # This here just for parsing. For all purposes, it's a string
-    STRUCT = 12,
-    MAP    = 13,
-    SET    = 14,
-    LIST   = 15,
-    UTF8   = 16,
-    UTF16  = 17
-  )
-)
+TType <- new.env()
+TType$STOP   <- 0
+TType$VOID   <- 1
+TType$BOOL   <- 2
+TType$BYTE   <- 3
+TType$I08    <- 3
+TType$DOUBLE <- 4
+TType$I16    <- 6
+TType$I32    <- 8
+TType$I64    <- 10
+TType$STRING <- 11
+TType$UTF7   <- 11
+TType$BINARY <- 11  # This here just for parsing. For all purposes, it's a string
+TType$STRUCT <- 12
+TType$MAP    <- 13
+TType$SET    <- 14
+TType$LIST   <- 15
+TType$UTF8   <- 16
+TType$UTF16  <- 17
 
 TPayload <- R6Class("TPayload",
   public = list(

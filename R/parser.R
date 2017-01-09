@@ -514,14 +514,8 @@ Parser <- R6Class("Parser",
   ),
   private = list(
     parse_seq = function(p) {
-      print("parse_seq")
-      print(p$length())
-      if(p$length() >= 1) print(p$get(1))
-      if(p$length() >= 2) print(p$get(2))
-      if(p$length() >= 3) print(p$get(3))
-      if(p$length() >= 4) print(p$get(4))
-           if(p$length() == 4) p$set(1, list(p$get(2)) + p$get(4))
-      else if(p$length() == 3) p$set(1, list(p$get(2)) + p$get(3))
+           if(p$length() == 4) p$set(1, append(list(p$get(2)), p$get(4)))
+      else if(p$length() == 3) p$set(1, append(list(p$get(2)), p$get(3)))
       else if(p$length() == 1) p$set(1, list())
     },
     cast = function(t) {
