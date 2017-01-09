@@ -40,6 +40,14 @@ TType$LIST   <- 15
 TType$UTF8   <- 16
 TType$UTF16  <- 17
 
+
+gen_init = function(cls, thrift_spec=NA, default_spec=NA) {
+  if(!is.na(thrift_spec))  cls$thrift_spec <- thrift_spec
+#  if(!is.na(default_spec)) cls$add_public('intialize', init_func_generator(cls, default_spec)
+  return(cls)
+}
+
+
 TPayload <- R6Class("TPayload",
   public = list(
     add_public = function(name, obj) {

@@ -393,8 +393,8 @@ Parser <- R6Class("Parser",
       else if(p$length() == 2) pset(1, list(p$get(2), NULL))
     },
     p_struct = function(doc='struct : seen_struct "{" field_seq "}" ', p) {
-      # TODO
-      print("p_struct")
+      val <- private$fill_in_struct(p$get(2), p$get(4))
+      private$add_thrift_meta('structs', val)
     },
     p_seen_struct = function(doc='seen_struct : STRUCT IDENTIFIER ', p) {
       val <- private$make_empty_struct(p$get(3))
@@ -513,6 +513,10 @@ Parser <- R6Class("Parser",
     }
   ),
   private = list(
+    add_thrift_meta = function(key, value) {
+      thrift <- tail(Parser$thrift_stack, 1)[[1]]
+      # TODO
+    },
     parse_seq = function(p) {
            if(p$length() == 4) p$set(1, append(list(p$get(2)), p$get(4)))
       else if(p$length() == 3) p$set(1, append(list(p$get(2)), p$get(3)))
@@ -582,6 +586,31 @@ Parser <- R6Class("Parser",
                        ttype=ttype
                      ))$new()
       return(cls)
+    },
+    fill_in_struct = function(cls, fields, gen_init=TRUE) {
+      thrift_spec  <- new.env()
+      default_spec <- list()
+      tspec        <- new.env()
+      
+      for(field in fields) {
+        if(field[[1]] %in% names(thrift_spec) || field[[4]] %in% names(tspec))
+          stop(sprintf('\'%d:%s\' field identifier/name has already been used',
+                       field[[1]], field[[4]]))
+        ttype <- field[[3]]
+        thrift_spec[[as.character(field[[1]])]] #<- ttype_spec(ttype, field[[4]], field[[2]])
+#        default_spec <- append(default_spec, c(field[[4]], field[[5]]))
+#        tspec[[field[[4]]]][[1]] <- field[[2]]
+#        tspec[[field[[4]]]][[2]] <- ttype
+      }
+      cls$add_public('thrift_spec', thrift_spec)
+      cls$add_public('default_spec', default_spec)
+      cls$add_public('tspec', tspec)
+#      if(gen_init) gen_init(cls, thrift_spec, default_spec)
+      return(cls)
+    },
+    ttype_spec = function(ttype, name, required=FALSE) {
+      if(is.integer(ttype)) return(list(ttype, name, required))
+      else                  return(list(ttype[0], name, ttype[1], required))
     }
   )
 )
