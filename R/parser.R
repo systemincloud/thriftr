@@ -198,15 +198,15 @@ Lexer <- R6Class("Lexer",
       return(NULL)
     },
     t_ignore_SILLYCOMM = function(re='\\/\\*\\**\\*\\/', t) {
-      t$lexer$lineno <- t$lexer$lineno + lengths(regmatches(t$value, gregexpr("a", t$value)))
+      t$lexer$lineno <- t$lexer$lineno + lengths(regmatches(t$value, gregexpr("\n", t$value)))
       return(NULL)
     },
     t_ignore_MULTICOMM = function(re='\\/\\*[^*]\\/*([^*/]|[^*]\\/|\\*[^/])*\\**\\*\\/', t) {
-      t$lexer$lineno <- t$lexer$lineno + lengths(regmatches(t$value, gregexpr("a", t$value)))
+      t$lexer$lineno <- t$lexer$lineno + lengths(regmatches(t$value, gregexpr("\n", t$value)))
       return(NULL)
     },
     t_ignore_DOCTEXT = function(re='\\/\\*\\*([^*/]|[^*]\\/|\\*[^/])*\\**\\*\\/', t) {
-      t$lexer$lineno <- t$lexer$lineno + lengths(regmatches(t$value, gregexpr("a", t$value)))
+      t$lexer$lineno <- t$lexer$lineno + lengths(regmatches(t$value, gregexpr("\n", t$value)))
       return(NULL)
     },
     t_ignore_UNIXCOMMENT = function(re='\\#[^\\n]*', t) {
