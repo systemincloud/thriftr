@@ -591,15 +591,15 @@ Parser <- R6Class("Parser",
       thrift_spec  <- new.env()
       default_spec <- list()
       tspec        <- new.env()
-      
+      # TODO
       for(field in fields) {
         if(field[[1]] %in% names(thrift_spec) || field[[4]] %in% names(tspec))
           stop(sprintf('\'%d:%s\' field identifier/name has already been used',
                        field[[1]], field[[4]]))
         ttype <- field[[3]]
-        thrift_spec[[as.character(field[[1]])]] #<- ttype_spec(ttype, field[[4]], field[[2]])
-#        default_spec <- append(default_spec, c(field[[4]], field[[5]]))
-#        tspec[[field[[4]]]][[1]] <- field[[2]]
+        thrift_spec[[as.character(field[[1]])]] <- private$ttype_spec(ttype, field[[4]], field[[2]])
+        default_spec <- append(default_spec, list(field[[4]], field[[5]]))
+        tspec[[field[[4]]]][[1]] <- field[[2]]
 #        tspec[[field[[4]]]][[2]] <- ttype
       }
       cls$add_public('thrift_spec', thrift_spec)
@@ -610,7 +610,7 @@ Parser <- R6Class("Parser",
     },
     ttype_spec = function(ttype, name, required=FALSE) {
       if(is.integer(ttype)) return(list(ttype, name, required))
-      else                  return(list(ttype[0], name, ttype[1], required))
+      else                  return(list(ttype[[1]], name, ttype[[2]], required))
     }
   )
 )

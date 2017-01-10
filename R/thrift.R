@@ -20,6 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+#' TType
+#'
+#' @export
 TType <- new.env()
 TType$STOP   <- 0
 TType$VOID   <- 1

@@ -7,6 +7,8 @@ context("type")
 
 test_that("test_set", {
   s <- thriftr_load("type.thrift")
-  print(s$Set)
-#  assert s.Set.thrift_spec == {1: (TType.SET, "a_set", TType.STRING, True)}
+  expect_that(s$Set$thrift_spec[["1"]][[1]], equals(TType$SET))
+  expect_that(s$Set$thrift_spec[["1"]][[2]], equals("a_set"))
+  expect_that(s$Set$thrift_spec[["1"]][[3]], equals(TType$STRING))
+  expect_that(s$Set$thrift_spec[["1"]][[4]], equals(TRUE))
 })
