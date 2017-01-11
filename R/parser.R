@@ -550,13 +550,16 @@ Parser <- R6Class("Parser",
       # TODO
     },
     cast_i16 = function(v) {
-      # TODO
+      if(typeof(v) != "integer") stop('')
+      return(v)
     },
     cast_i32 = function(v) {
-      # TODO
+      if(typeof(v) != "integer") stop('')
+      return(v)
     },
     cast_i64 = function(v) {
-      # TODO
+      if(typeof(v) != "integer") stop('')
+      return(v)
     },
     cast_double = function(v) {
       # TODO
