@@ -4,8 +4,8 @@ const i16 int16 = 3
 const i32 int32 = 800
 const i64 int64 = 123456789
 #const string tstr = "hello world"
-#const double tdouble = 1.3
-#typedef i32 Integer32
+const double tdouble = 1.3
+typedef i32 Integer32
 #const Integer32 integer32 = 900
 #const list<i32> tlist = [1, 2, 3]
 #const set<i32> tset = [1, 2, 3]
@@ -13,12 +13,12 @@ const i64 int64 = 123456789
 #const map<string, Integer32> tmap2 = {"key": 32}
 
 # https://github.com/eleme/thriftpy/pull/69
-#enum Country {
-#    US = 1,
-#    UK = 2,
-#    CA = 3,
-#    CN = 4
-#}
+enum Country {
+    US = 1,
+    UK = 2,
+    CA = 3,
+    CN = 4
+}
 
 #const Country my_country = Country.CN;
 

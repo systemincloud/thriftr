@@ -9,7 +9,7 @@ test_that("test_comments", {
   thriftr_load("parser-cases/comments.thrift")
 })
 
-test_that("test_comments", {
+test_that("test_constants", {
   thrift <- thriftr_load("parser-cases/constants.thrift")
   expect_that(thrift$tbool,            equals(TRUE))
   expect_that(thrift$tboolint,         equals(TRUE))
@@ -18,7 +18,7 @@ test_that("test_comments", {
   expect_that(thrift$int64,            equals(123456789))
 #  expect_that(thrift$tstr,             equals('hello world'))
 #  expect_that(thrift$integer32,        equals(900))
-#  expect_that(thrift$tdouble,          equals(1.2))
+  expect_that(thrift$tdouble,          equals(1.3))
 #  expect_that(thrift$tlist,            equals(list(1, 2, 3)))
 #  expect_that(thrift$tset,             equals(list(1, 2, 3)))
 #  expect_that(thrift$tmap1['key'],     equals('val'))

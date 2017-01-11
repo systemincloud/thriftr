@@ -231,7 +231,7 @@ Lexer <- R6Class("Lexer",
       return(t)
     },
     t_LITERAL = function(re='(\\"([^\\\n]|(\\.))*?\")|\'([^\\\n]|(\\.))*?\'', t) {
-      s <- tail(head(t, -1), -1)
+      s <- substr(t$value, 1, nchar(t$value) - 1)
       maps <- new.env(hash=TRUE)
       maps['t']  <- '\t'
       maps['r']  <- '\r'
@@ -241,17 +241,17 @@ Lexer <- R6Class("Lexer",
       maps['"']  <- '\"'
       
       i <- 1
-      length <- length(s)
+      length <- nchar(s)
       val <- ''
       while(i < length) {
-        if(s[[i]] == '\\') {
+        if(substr(s, i, i) == '\\') {
           i <- i + 1
-          if(s[[i]] %in% maps) val <- val + maps[[s[[i]]]]
+          if(substr(s, i, i) %in% maps) val <- val + maps[[substr(s, i, i)]]
           else {
-            msg <- sprintf('Unexcepted escaping characher: %s', s[[i]])
+            msg <- sprintf('Unexcepted escaping characher: %s', substr(s, i, i))
             stop(msg)
           }
-        } else val <- val + s[[i]]
+        } else val <- paste(val, substr(s, i, i), sep = "")
         i <- i + 1
      }
     
@@ -562,7 +562,8 @@ Parser <- R6Class("Parser",
       return(v)
     },
     cast_double = function(v) {
-      # TODO
+      if(typeof(v) != "double") stop('')
+      return(v)
     },
     cast_string = function(v) {
       if(typeof(v) != "character") stop('')
