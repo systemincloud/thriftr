@@ -330,8 +330,13 @@ Parser <- R6Class("Parser",
     },
     p_const = function(doc='const : CONST field_type IDENTIFIER "=" const_value
                                   | CONST field_type IDENTIFIER "=" const_value sep', p) {
-      # TODO
-      print("p_const")
+      val <- tryCatch({
+        private$cast(p$get(3))(p$get(6))
+      }, error = function(e) {
+        stop(sprintf('Type error for constant %s at line %d', p$get(4), p$lineno))
+      })
+      tail(Parser$thrift_stack, 1)[[1]]$add_public(p$get(4), val)
+      private$add_thrift_meta('consts', val)
     },
     p_const_value = function(doc='const_value : INTCONSTANT
                                               | DUBCONSTANT
@@ -538,7 +543,8 @@ Parser <- R6Class("Parser",
       if(t[[1]] == TType$STRUCT) return(private$cast_struct(t))
     },
     cast_bool = function(v) {
-      # TODO
+      if(typeof(v) != "logical" && typeof(v) != "integer") stop('')
+      return(as.logical(v))
     },
     cast_byte = function(v) {
       # TODO
@@ -556,7 +562,7 @@ Parser <- R6Class("Parser",
       # TODO
     },
     cast_string = function(v) {
-      if(typeof(v) != "character") stop()
+      if(typeof(v) != "character") stop('')
       return(v)
     },
     cast_binary = function(v) {
@@ -676,7 +682,7 @@ thriftr_parse = function(path,
                     public=list(thrift_file=path,
                                 add_public = function(name, obj) {
                                   self[[name]] <- obj
-                                  environment(self[[name]]) <- environment(self$add_public)
+#                                  environment(self[[name]]) <- environment(self$add_public)
                                 }))$new()
   Parser$thrift_stack <- append(Parser$thrift_stack, thrift)
   parser$parse(data, lexer)
