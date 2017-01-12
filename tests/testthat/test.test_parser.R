@@ -17,7 +17,7 @@ test_that("test_constants", {
   expect_that(thrift$int32,            equals(800))
   expect_that(thrift$int64,            equals(123456789))
   expect_that(thrift$tstr,             equals('hello world'))
-#  expect_that(thrift$integer32,        equals(900))
+  expect_that(thrift$integer32,        equals(900))
   expect_that(thrift$tdouble,          equals(1.3))
 #  expect_that(thrift$tlist,            equals(list(1, 2, 3)))
 #  expect_that(thrift$tset,             equals(list(1, 2, 3)))

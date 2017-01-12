@@ -6,7 +6,7 @@ const i64 int64 = 123456789
 const string tstr = "hello world"
 const double tdouble = 1.3
 typedef i32 Integer32
-#const Integer32 integer32 = 900
+const Integer32 integer32 = 900
 #const list<i32> tlist = [1, 2, 3]
 #const set<i32> tset = [1, 2, 3]
 #const map<string, string> tmap1 = {"key": "val"}

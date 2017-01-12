@@ -379,8 +379,7 @@ Parser <- R6Class("Parser",
                                   | service', p) {
     },
     p_typedef = function(doc='typedef : TYPEDEF field_type IDENTIFIER', p) {
-      # TODO
-      print("p_typedef")
+      tail(Parser$thrift_stack, 1)[[1]]$add_public(p$get(4), p$get(3))
     },
     p_enum = function(doc='enum : ENUM IDENTIFIER "{" enum_seq "}" ', p) {
       # TODO
@@ -476,8 +475,17 @@ Parser <- R6Class("Parser",
       p$set(1, p$get(2))
     },
     p_ref_type = function(doc='ref_type : IDENTIFIER', p) {
-      # TODO
-      print("p_ref_type")
+      ref_type <- tail(Parser$thrift_stack, 1)[[1]]
+      
+      for(name in strsplit(p$get(2), "\\.")) {
+        ref_type <- ref_type[[name]]
+        if(is.null(ref_type))
+          stop(sprintf('No type found: %r, at line %d', p$get(2), p$lineno))
+      }
+      
+      if(typeof(ref_type) == 'environment' && 
+         !is.null(ref_type[['ttype']])) p$set(1, list(ref_type[['ttype']], ref_type))
+      else                              p$set(1, ref_type)
     },
     p_base_type = function(doc='base_type : BOOL
                                           | BYTE
