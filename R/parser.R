@@ -332,9 +332,10 @@ Parser <- R6Class("Parser",
                                   | CONST field_type IDENTIFIER "=" const_value sep', p) {
       val <- tryCatch({
         private$cast(p$get(3))(p$get(6))
-      }, error = function(e) {
-        stop(sprintf('Type error for constant %s at line %d', p$get(4), p$lineno))
-      })
+      }, error = function(e) { })
+      if(is.null(val))
+        stop(sprintf('Type error for constant %s at line %d', p$get(4), p$lexer$lineno))
+      
       tail(Parser$thrift_stack, 1)[[1]]$add_public(p$get(4), val)
       private$add_thrift_meta('consts', val)
     },
@@ -454,10 +455,11 @@ Parser <- R6Class("Parser",
       if(p$length() == 7) {
         val <- tryCatch({
           private$cast(p$get(4))(p$get(7))
-        }, error = function(e) {
-          stop(sprintf('Type error for field %s at line %d', p$get(5), p$lineno))
-        })
+        }, error = function(e) { })
       }
+      if(is.null(val))
+        stop(sprintf('Type error for field %s at line %d', p$get(5), p$lexer$lineno))
+      
       
       p$set(1, list(p$get(2), p$get(3), p$get(4), p$get(5), val))
     },
@@ -514,8 +516,7 @@ Parser <- R6Class("Parser",
       print("p_map_type")
     },
     p_list_type = function(doc='list_type : LIST "<" field_type ">" ', p) {
-      # TODO
-      print("p_list_type")
+      p$set(1, list(TType$LIST, p$get(4)))
     },
     p_set_type = function(doc='set_type : SET "<" field_type ">" ', p) {
       p$set(1, list(TType$SET, p$get(4)))
@@ -580,8 +581,15 @@ Parser <- R6Class("Parser",
     cast_binary = function(v) {
       # TODO
     },
-    cast_list = function(v) {
-      # TODO
+    cast_list = function(t) {
+      if(t[[1]] != TType$LIST) stop('')
+      
+      cast_list_ = function(v) {
+        if(typeof(v) != "list") stop('')
+        v <- lapply(v, private$cast(t[[2]]))
+        return(v)
+      }
+      return(cast_list_)
     },
     cast_set = function(v) {
       # TODO
