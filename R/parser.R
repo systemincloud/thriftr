@@ -231,19 +231,19 @@ Lexer <- R6Class("Lexer",
       return(t)
     },
     t_LITERAL = function(re='(\\"([^\\\n]|(\\.))*?\")|\'([^\\\n]|(\\.))*?\'', t) {
-      s <- substr(t$value, 1, nchar(t$value) - 1)
+      s <- substr(t$value, 2, nchar(t$value) - 1)
       maps <- new.env(hash=TRUE)
-      maps['t']  <- '\t'
-      maps['r']  <- '\r'
-      maps['n']  <- '\n'
-      maps['\\'] <- '\\'
-      maps['\''] <- '\''
-      maps['"']  <- '\"'
+      maps[['t']]  <- '\t'
+      maps[['r']]  <- '\r'
+      maps[['n']]  <- '\n'
+      maps[['\\']] <- '\\'
+      maps[['\'']] <- '\''
+      maps[['"']]  <- '\"'
       
       i <- 1
       length <- nchar(s)
       val <- ''
-      while(i < length) {
+      while(i <= length) {
         if(substr(s, i, i) == '\\') {
           i <- i + 1
           if(substr(s, i, i) %in% maps) val <- val + maps[[substr(s, i, i)]]
