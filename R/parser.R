@@ -591,8 +591,15 @@ Parser <- R6Class("Parser",
       }
       return(cast_list_)
     },
-    cast_set = function(v) {
-      # TODO
+    cast_set = function(t) {
+      if(t[[1]] != TType$SET) stop('')
+
+      cast_set_ = function(v) {
+        if(typeof(v) != "list") stop('')
+        v <- lapply(v, private$cast(t[[2]]))
+        return(v)
+      }
+      return(cast_set_)
     },
     cast_map = function(v) {
       # TODO

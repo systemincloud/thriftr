@@ -8,7 +8,7 @@ const double tdouble = 1.3
 typedef i32 Integer32
 const Integer32 integer32 = 900
 const list<i32> tlist = [1, 2, 3]
-#const set<i32> tset = [1, 2, 3]
+const set<i32> tset = [1, 2, 3]
 #const map<string, string> tmap1 = {"key": "val"}
 #const map<string, Integer32> tmap2 = {"key": 32}
 

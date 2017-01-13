@@ -20,7 +20,7 @@ test_that("test_constants", {
   expect_that(thrift$integer32,        equals(900))
   expect_that(thrift$tdouble,          equals(1.3))
   expect_that(length(setdiff(thrift$tlist, list(1, 2, 3))), equals(0))
-#  expect_that(thrift$tset,             equals(list(1, 2, 3)))
+  expect_that(length(setdiff(thrift$tset, list(1, 2, 3))), equals(0))
 #  expect_that(thrift$tmap1['key'],     equals('val'))
 #  expect_that(thrift$tmap2['key'],     equals(32))
 #  expect_that(thrift$my_country,       equals(4))
