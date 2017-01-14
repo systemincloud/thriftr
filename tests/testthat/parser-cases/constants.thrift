@@ -9,8 +9,8 @@ typedef i32 Integer32
 const Integer32 integer32 = 900
 const list<i32> tlist = [1, 2, 3]
 const set<i32> tset = [1, 2, 3]
-#const map<string, string> tmap1 = {"key": "val"}
-#const map<string, Integer32> tmap2 = {"key": 32}
+const map<string, string> tmap1 = {"key": "val"}
+const map<string, Integer32> tmap2 = {"key": 32}
 
 # https://github.com/eleme/thriftpy/pull/69
 enum Country {

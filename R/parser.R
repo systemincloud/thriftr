@@ -357,8 +357,10 @@ Parser <- R6Class("Parser",
       private$parse_seq(p)
     },
     p_const_map = function(doc='const_map : "{" const_map_seq "}" ', p) {
-      # TODO
-      print("p_const_map")
+      dict <- new.env()
+      for(it in p$get(3))
+        dict[[it[[1]]]] <- it[[2]]
+      p$set(1, dict)
     },
     p_const_map_seq = function(doc='const_map_seq : const_map_item sep const_map_seq
                                                   | const_map_item const_map_seq
@@ -512,8 +514,7 @@ Parser <- R6Class("Parser",
       p$set(1, p$get(2))
     },
     p_map_type = function(doc='map_type : MAP "<" field_type "," field_type ">" ', p) {
-      # TODO
-      print("p_map_type")
+      p$set(1, list(TType$MAP, list(p$get(4), p$get(6))))
     },
     p_list_type = function(doc='list_type : LIST "<" field_type ">" ', p) {
       p$set(1, list(TType$LIST, p$get(4)))
@@ -537,19 +538,22 @@ Parser <- R6Class("Parser",
       else if(p$length() == 1) p$set(1, list())
     },
     cast = function(t) {
-      if(t == TType$BOOL)        return(private$cast_bool)
-      if(t == TType$BYTE)        return(private$cast_byte)
-      if(t == TType$I16)         return(private$cast_i16)
-      if(t == TType$I32)         return(private$cast_i32)
-      if(t == TType$I64)         return(private$cast_i64)
-      if(t == TType$DOUBLE)      return(private$cast_double)
-      if(t == TType$STRING)      return(private$cast_string)
-      if(t == TType$BINARY)      return(private$cast_binary)
-      if(t[[1]] == TType$LIST)   return(private$cast_list(t))
-      if(t[[1]] == TType$SET)    return(private$cast_set(t))
-      if(t[[1]] == TType$MAP)    return(private$cast_map(t))
-      if(t[[1]] == TType$I32)    return(private$cast_enum(t))
-      if(t[[1]] == TType$STRUCT) return(private$cast_struct(t))
+      if(typeof(t) != "list") {
+        if(t == TType$BOOL)        return(private$cast_bool)
+        if(t == TType$BYTE)        return(private$cast_byte)
+        if(t == TType$I16)         return(private$cast_i16)
+        if(t == TType$I32)         return(private$cast_i32)
+        if(t == TType$I64)         return(private$cast_i64)
+        if(t == TType$DOUBLE)      return(private$cast_double)
+        if(t == TType$STRING)      return(private$cast_string)
+        if(t == TType$BINARY)      return(private$cast_binary)
+      } else {
+        if(t[[1]] == TType$LIST)   return(private$cast_list(t))
+        if(t[[1]] == TType$SET)    return(private$cast_set(t))
+        if(t[[1]] == TType$MAP)    return(private$cast_map(t))
+        if(t[[1]] == TType$I32)    return(private$cast_enum(t))
+        if(t[[1]] == TType$STRUCT) return(private$cast_struct(t))
+      }
     },
     cast_bool = function(v) {
       if(typeof(v) != "logical" && typeof(v) != "integer") stop('')
@@ -601,8 +605,17 @@ Parser <- R6Class("Parser",
       }
       return(cast_set_)
     },
-    cast_map = function(v) {
-      # TODO
+    cast_map = function(t) {
+      if(t[[1]] != TType$MAP) stop('')
+      
+      cast_map_ = function(v) {
+        if(typeof(v) != "environment") stop('')
+        for(key in names(v)) {
+          v[[private$cast(t[[2]][[1]])(key)]] <- private$cast(t[[2]][[2]])(v[[key]])
+        }
+        return(v)
+      }
+      return(cast_map_)
     },
     cast_enum = function(v) {
       # TODO
