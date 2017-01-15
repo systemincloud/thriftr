@@ -20,7 +20,7 @@ enum Country {
     CN = 4
 }
 
-#const Country my_country = Country.CN;
+const Country my_country = Country.CN;
 
 #struct Person {
 #    1: string name,

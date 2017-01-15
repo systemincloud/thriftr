@@ -278,7 +278,7 @@ Parser <- R6Class("Parser",
     tokens = TOKENS,   
     p_error = function(p) {
       if(is.null(p)) stop("Grammar error at EOF")
-      else           stop(sprintf("Grammar error %s at '%s'", p$value, p$lineno))
+      else           stop(sprintf("Grammar error %s at '%s'", p$value, p$lexer$lineno))
     },
     p_start = function(doc='start : header definition', p) {
     },
@@ -371,8 +371,18 @@ Parser <- R6Class("Parser",
       p$set(1, list(p$get(2), p$get(4)))
     },
     p_const_ref = function(doc='const_ref : IDENTIFIER', p) {
-      # TODO
-      print("p_const_ref")
+      child <- tail(Parser$thrift_stack, 1)[[1]]
+      for(name in strsplit(p$get(2), "\\.")[[1]]) {
+        father <- child
+        child <- child[[name]]
+        if(is.null(child))
+          stop(sprintf('Can\'t find name %s at line %d', p$get(2), p$lexer$lineno))
+        
+        if(is.null(private$get_ttype(child)) || private$get_ttype(child) == TType$I32) {
+          # child is a constant or enum value
+          p$set(1, child)
+        } else stop(sprintf('No enum value or constant found named %s', p$get(2)))
+      }
     },
     p_ttype = function(doc='ttype : typedef
                                   | enum
@@ -385,8 +395,9 @@ Parser <- R6Class("Parser",
       tail(Parser$thrift_stack, 1)[[1]]$add_public(p$get(4), p$get(3))
     },
     p_enum = function(doc='enum : ENUM IDENTIFIER "{" enum_seq "}" ', p) {
-      # TODO
-      print("p_enum")
+      val <- private$make_enum(p$get(3), p$get(5))
+      tail(Parser$thrift_stack, 1)[[1]]$add_public(p$get(3), val)
+      private$add_thrift_meta('enums', val)
     },
     p_enum_seq = function(doc='enum_seq : enum_item sep enum_seq
                                         | enum_item enum_seq
@@ -484,7 +495,7 @@ Parser <- R6Class("Parser",
       for(name in strsplit(p$get(2), "\\.")) {
         ref_type <- ref_type[[name]]
         if(is.null(ref_type))
-          stop(sprintf('No type found: %r, at line %d', p$get(2), p$lineno))
+          stop(sprintf('No type found: %r, at line %d', p$get(2), p$lexer$lineno))
       }
       
       if(typeof(ref_type) == 'environment' && 
@@ -617,11 +628,45 @@ Parser <- R6Class("Parser",
       }
       return(cast_map_)
     },
-    cast_enum = function(v) {
-      # TODO
+    cast_enum = function(t) {
+      if(t[[1]] != TType$I32) stop('')
+
+      cast_enum_ = function(v) {
+        if(typeof(v) != "integer") stop('')
+        if(v %in% lapply(ls(t[[2]]), function(x) t[[2]][[x]]))
+          return(v)
+        stop(sprintf('Couldn\'t find a named value in enum %s for value %d', 
+                     t[[2]]$name, v))
+      }
+      return(cast_enum_)
     },
     cast_struct = function(v) {
       # TODO
+    },
+    make_enum = function(name, kvs) {
+      cls <- R6Class(name,
+                     inherit=TPayload,
+                     lock=FALSE, 
+                     public=list(
+                       module=tail(Parser$thrift_stack, 1)[[1]]$name,
+                       ttype=TType$I32
+                     ))
+      
+      if(!is.null(kvs)) {
+        val <- kvs[[1]][[2]]
+        if(is.null(val)) val <- -1
+        for(item in kvs) {
+          if(is.null(item[[2]])) item[[2]] <- val + 1
+          val <- item[[2]]
+        }
+        for(key_val in kvs) {
+          key <- key_val[[1]]
+          val <- key_val[[2]]
+          cls$set("public", key, val)
+        }
+      }
+      
+      return(cls$new())
     },
     make_empty_struct = function(name, ttype=TType$STRUCT) {
       cls <- R6Class(name,
@@ -657,6 +702,11 @@ Parser <- R6Class("Parser",
     ttype_spec = function(ttype, name, required=FALSE) {
       if(is.integer(ttype)) return(list(ttype, name, required))
       else                  return(list(ttype[[1]], name, ttype[[2]], required))
+    },
+    get_ttype = function(inst, default_ttype=NULL) {
+      if(typeof(inst) == "environment" && 
+          !is.null(inst$ttype)) return(inst$ttype)
+      else                      return(default_ttype)
     }
   )
 )

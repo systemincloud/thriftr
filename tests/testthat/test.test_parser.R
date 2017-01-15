@@ -23,7 +23,7 @@ test_that("test_constants", {
   expect_that(length(setdiff(thrift$tset, list(1, 2, 3))), equals(0))
   expect_that(thrift$tmap1[['key']],   equals('val'))
   expect_that(thrift$tmap2[['key']],   equals(32))
-#  expect_that(thrift$my_country,       equals(4))
+  expect_that(thrift$my_country,       equals(4))
 #  expect_that(thrift$tom,              equals(thrift$Person$new(name='tom')))
 #  expect_that(thrift$country_map['1'], equals('US'))
 })
