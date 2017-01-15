@@ -35,7 +35,7 @@
 #'
 #' @export
 load <- function(path, module_name=NA, include_dirs=NA) {
-  thrift <- thriftr_parse(path, module_name, include_dirs=include_dirs)
+  thrift <- thriftr::parse(path, module_name, include_dirs=include_dirs)
   return(thrift)
 }
 
