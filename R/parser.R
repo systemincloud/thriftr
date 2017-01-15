@@ -34,7 +34,7 @@
 #' @return Thrift R6 class instance
 #'
 #' @export
-thriftr_load <- function(path, module_name=NA, include_dirs=NA) {
+load <- function(path, module_name=NA, include_dirs=NA) {
   thrift <- thriftr_parse(path, module_name, include_dirs=include_dirs)
   return(thrift)
 }
@@ -743,12 +743,12 @@ thrift_cache  <- new.env(hash=TRUE)
 #'                     is provided, use it as cache key, else use the `path`
 #' 
 #' @return Thrift module
-thriftr_parse = function(path, 
-                         module_name=NA, 
-                         include_dirs=NA, 
-                         lexer=NA, 
-                         parser=NA, 
-                         enable_cache=TRUE) {
+parse = function(path, 
+                 module_name=NA, 
+                 include_dirs=NA, 
+                 lexer=NA, 
+                 parser=NA, 
+                 enable_cache=TRUE) {
                        
   # dead include checking on current stack
   for(thrift in Parser$thrift_stack) {

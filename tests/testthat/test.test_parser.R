@@ -1,7 +1,6 @@
 #! /usr/bin/env Rscript
 
 library(testthat)
-library(thriftr)
 
 context("parser")
 
@@ -10,7 +9,7 @@ test_that("test_comments", {
 })
 
 test_that("test_constants", {
-  thrift <- thriftr_load("parser-cases/constants.thrift")
+  thrift <- thriftr::load("parser-cases/constants.thrift")
   expect_that(thrift$tbool,            equals(TRUE))
   expect_that(thrift$tboolint,         equals(TRUE))
   expect_that(thrift$int16,            equals(3))
@@ -88,7 +87,7 @@ test_that("test_e_grammer_error_at_eof", {
 })
 
 test_that("test_e_use_thrift_reserved_keywords", {
-  expect_error(thriftr_load('parser-cases/e_use_thrift_reserved_keywords.thrift'),
+  expect_error(thriftr::load('parser-cases/e_use_thrift_reserved_keywords.thrift'),
                'Cannot use reserved language keyword: next at line 1')
 })
 
