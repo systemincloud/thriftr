@@ -185,7 +185,7 @@ TOKENS = c(c(
   toupper(KEYWORDS)
 )
 
-Lexer <- R6Class("Lexer",
+Lexer <- R6::R6Class("Lexer",
   public = list(
     tokens = TOKENS,
     literals = LITERALS,
@@ -271,7 +271,7 @@ Lexer <- R6Class("Lexer",
 )
 
 #' @importFrom utils tail
-Parser <- R6Class("Parser",
+Parser <- R6::R6Class("Parser",
   public = list(
     thrift_stack = list(),
     
@@ -640,17 +640,28 @@ Parser <- R6Class("Parser",
       }
       return(cast_enum_)
     },
-    cast_struct = function(v) {
-      # TODO
+    cast_struct = function(t) {   # struct/exception/union
+      if(t[[1]] != TType$STRUCT) stop('')
+      
+      cast_struct_ = function(v) {
+#        if isinstance(v, t[1]):
+              return(v)  # already cast
+        
+        if(typeof(v) != 'environment') stop('')
+        tspec <- t[[2]]$tspec
+        
+        # TODO
+      }
+      return(cast_struct_)
     },
     make_enum = function(name, kvs) {
-      cls <- R6Class(name,
-                     inherit=TPayload,
-                     lock=FALSE, 
-                     public=list(
-                       module=tail(Parser$thrift_stack, 1)[[1]]$name,
-                       ttype=TType$I32
-                     ))
+      cls <- R6::R6Class(name,
+                         inherit=TPayload,
+                         lock=FALSE, 
+                         public=list(
+                           module=tail(Parser$thrift_stack, 1)[[1]]$name,
+                           ttype=TType$I32
+                         ))
       
       if(!is.null(kvs)) {
         val <- kvs[[1]][[2]]
@@ -669,13 +680,13 @@ Parser <- R6Class("Parser",
       return(cls$new())
     },
     make_empty_struct = function(name, ttype=TType$STRUCT) {
-      cls <- R6Class(name,
-                     inherit=TPayload,
-                     lock=FALSE, 
-                     public=list(
-                       module=tail(Parser$thrift_stack, 1)[[1]]$name,
-                       ttype=ttype
-                     ))$new()
+      cls <- R6::R6Class(name,
+                         inherit=TPayload,
+                         lock=FALSE, 
+                         public=list(
+                           module=tail(Parser$thrift_stack, 1)[[1]]$name,
+                           ttype=ttype
+                         ))$new()
       return(cls)
     },
     fill_in_struct = function(cls, fields, gen_init=TRUE) {
@@ -750,8 +761,8 @@ thriftr_parse = function(path,
   if(enable_cache && cache_key %in% names(thrift_cache))
     return(thrift_cache[[cache_key]])
   
-  if(is.na(lexer))  lexer  <- lex(Lexer)
-  if(is.na(parser)) parser <- yacc(Parser)
+  if(is.na(lexer))  lexer  <- rly::lex(Lexer)
+  if(is.na(parser)) parser <- rly::yacc(Parser)
   
   if(!is.na(include_dirs)) include_dirs_ <- include_dirs
   
@@ -767,13 +778,13 @@ thriftr_parse = function(path,
     module_name <- strsplit(basename(path), "\\.")[[1]]
   }
   
-  thrift <- R6Class(module_name, 
-                    lock=FALSE, 
-                    public=list(thrift_file=path,
-                                add_public = function(name, obj) {
-                                  self[[name]] <- obj
-#                                  environment(self[[name]]) <- environment(self$add_public)
-                                }))$new()
+  thrift <- R6::R6Class(module_name, 
+                        lock=FALSE, 
+                        public=list(thrift_file=path,
+                                    add_public = function(name, obj) {
+                                      self[[name]] <- obj
+#                                     environment(self[[name]]) <- environment(self$add_public)
+                                    }))$new()
   Parser$thrift_stack <- append(Parser$thrift_stack, thrift)
   parser$parse(data, lexer)
   Parser$thrift_stack <- tail(Parser$thrift_stack, 1)

@@ -22,12 +22,12 @@ enum Country {
 
 const Country my_country = Country.CN;
 
-#struct Person {
-#    1: string name,
-#    2: Country country = Country.US
-#}
+struct Person {
+    1: string name,
+    2: Country country = Country.US
+}
 
-#const Person tom = {"name": "tom"}
+const Person tom = {"name": "tom"}
 
 # https://github.com/eleme/thriftpy/issues/75
 #const map<Country, string> country_map = {

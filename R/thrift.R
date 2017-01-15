@@ -24,24 +24,24 @@
 #'
 #' @export
 TType <- new.env()
-TType$STOP   <- 0
-TType$VOID   <- 1
-TType$BOOL   <- 2
-TType$BYTE   <- 3
-TType$I08    <- 3
-TType$DOUBLE <- 4
-TType$I16    <- 6
-TType$I32    <- 8
-TType$I64    <- 10
-TType$STRING <- 11
-TType$UTF7   <- 11
-TType$BINARY <- 11  # This here just for parsing. For all purposes, it's a string
-TType$STRUCT <- 12
-TType$MAP    <- 13
-TType$SET    <- 14
-TType$LIST   <- 15
-TType$UTF8   <- 16
-TType$UTF16  <- 17
+TType$STOP   <- as.integer(0)
+TType$VOID   <- as.integer(1)
+TType$BOOL   <- as.integer(2)
+TType$BYTE   <- as.integer(3)
+TType$I08    <- as.integer(3)
+TType$DOUBLE <- as.integer(4)
+TType$I16    <- as.integer(6)
+TType$I32    <- as.integer(8)
+TType$I64    <- as.integer(10)
+TType$STRING <- as.integer(11)
+TType$UTF7   <- as.integer(11)
+TType$BINARY <- as.integer(11)  # This here just for parsing. For all purposes, it's a string
+TType$STRUCT <- as.integer(12)
+TType$MAP    <- as.integer(13)
+TType$SET    <- as.integer(14)
+TType$LIST   <- as.integer(15)
+TType$UTF8   <- as.integer(16)
+TType$UTF16  <- as.integer(17)
 
 
 gen_init = function(cls, thrift_spec=NA, default_spec=NA) {

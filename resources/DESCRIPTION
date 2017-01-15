@@ -15,7 +15,7 @@ License: MIT + file LICENSE
 URL: ${project.url}
 BugReports: ${project.issueManagement.url}
 Suggests: testthat
-Depends:
+Imports:
     R6,
     rly
 RoxygenNote: 5.0.1
