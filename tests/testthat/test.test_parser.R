@@ -88,7 +88,8 @@ test_that("test_e_grammer_error_at_eof", {
 })
 
 test_that("test_e_use_thrift_reserved_keywords", {
-  # TODO
+  expect_error(thriftr_load('parser-cases/e_use_thrift_reserved_keywords.thrift'),
+               'Cannot use reserved language keyword: next at line 1')
 })
 
 test_that("test_e_duplicate_field_id_or_name", {
