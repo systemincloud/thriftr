@@ -5,7 +5,7 @@ library(testthat)
 context("parser")
 
 test_that("test_comments", {
-  thriftr_load("parser-cases/comments.thrift")
+  thriftr::load("parser-cases/comments.thrift")
 })
 
 test_that("test_constants", {
