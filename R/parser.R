@@ -657,7 +657,7 @@ Parser <- R6::R6Class("Parser",
     make_enum = function(name, kvs) {
       cls <- R6::R6Class(name,
                          inherit=TPayload,
-                         lock=FALSE, 
+                         lock_objects=FALSE, 
                          public=list(
                            module=tail(Parser$thrift_stack, 1)[[1]]$name,
                            ttype=TType$I32
@@ -682,7 +682,7 @@ Parser <- R6::R6Class("Parser",
     make_empty_struct = function(name, ttype=TType$STRUCT) {
       cls <- R6::R6Class(name,
                          inherit=TPayload,
-                         lock=FALSE, 
+                         lock_objects=FALSE, 
                          public=list(
                            module=tail(Parser$thrift_stack, 1)[[1]]$name,
                            ttype=ttype
@@ -779,7 +779,7 @@ parse = function(path,
   }
   
   thrift <- R6::R6Class(module_name, 
-                        lock=FALSE, 
+                        lock_objects=FALSE, 
                         public=list(thrift_file=path,
                                     add_public = function(name, obj) {
                                       self[[name]] <- obj
