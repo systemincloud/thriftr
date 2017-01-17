@@ -786,8 +786,9 @@ parse = function(path,
 #                                     environment(self[[name]]) <- environment(self$add_public)
                                     }))$new()
   Parser$thrift_stack <- append(Parser$thrift_stack, thrift)
+  lexer$lineno <- 1
   parser$parse(data, lexer)
-  Parser$thrift_stack <- tail(Parser$thrift_stack, 1)
+  Parser$thrift_stack <- head(Parser$thrift_stack, -1)
   
   if(enable_cache) thrift_cache[[cache_key]] <- thrift
   
