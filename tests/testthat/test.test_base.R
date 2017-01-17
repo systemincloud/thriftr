@@ -4,7 +4,8 @@ library(testthat)
 
 context("base")
 
-thrift <- thriftr::load("base.thrift")
+ab  <- thriftr::load("addressbook.thrift")
+#ab2 <- thriftr::load("addressbook.thrift")
 
 test_that("test_obj_equalcheck", {
   # TODO
