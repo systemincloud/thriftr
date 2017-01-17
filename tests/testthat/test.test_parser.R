@@ -68,6 +68,7 @@ test_that("test_e_structs", {
 
 test_that("test_service", {
   # TODO
+  #thrift <- thriftr::load('parser-cases/service.thrift')
 })
 
 test_that("test_service_extends", {
