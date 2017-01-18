@@ -292,21 +292,23 @@ Parser <- R6::R6Class("Parser",
                                               | namespace', p) {
     },
     p_include = function(doc='include : INCLUDE LITERAL', p) {
-      # TODO
-      print("p_include")
       thrift <- tail(Parser$thrift_stack, 1)[[1]]
-      if(is.null(thrift$thrift_file__))
+      if(is.null(thrift$thrift_file))
         stop('Unexcepted include statement while loading from file like object.')
-      replace_include_dirs <- append(include_dirs_, thrift$thrift_file__)
+      
+      replace_include_dirs <- if(dirname(thrift$thrift_file) != '.') 
+                                append(include_dirs_, dirname(thrift$thrift_file), 0)
+                              else include_dirs_
       for(include_dir in replace_include_dirs) {
-        if(dir.exists(file.path(include_dir, p[[3]]))) {
-#          child <- parse(path)
-#          setattr(thrift, child.__name__, child)
-#          add_thrift_meta('includes', child)
+        path <- file.path(include_dir, p$get(3))
+        if(file.exists(path)) {
+          child <- parse(path)
+          thrift[[class(child)[[1]]]] <- child
+          private$add_thrift_meta('includes', child)
           return()
         }
       }
-      stop(sprintf('Couldn\'t include thrift %s in any directories provided', p[[3]]))
+      stop(sprintf('Couldn\'t include thrift %s in any directories provided', p$get(3)))
     },
     p_namespace = function(doc='namespace : NAMESPACE namespace_scope IDENTIFIER', p) {
       # TODO
@@ -730,6 +732,7 @@ thrift_cache  <- new.env(hash=TRUE)
 #' @importFrom R6 R6Class
 #' @importFrom rly lex
 #' @importFrom rly yacc
+#' @importFrom utils head
 #' 
 #' @param path file path to parse, should be a string ending with '.thrift'
 #' @param module_name the name for parsed module, the default is the basename
