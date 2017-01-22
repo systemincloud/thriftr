@@ -688,7 +688,7 @@ Parser <- R6::R6Class("Parser",
                          public=list(
                            module=tail(Parser$thrift_stack, 1)[[1]]$name,
                            ttype=ttype
-                         ))$new()
+                         ))
       return(cls)
     },
     fill_in_struct = function(cls, fields, gen_init=TRUE) {
@@ -706,9 +706,9 @@ Parser <- R6::R6Class("Parser",
         tspec[[field[[4]]]][[1]] <- field[[2]]
 #        tspec[[field[[4]]]][[2]] <- ttype
       }
-      cls$add_public('thrift_spec', thrift_spec)
-      cls$add_public('default_spec', default_spec)
-      cls$add_public('tspec', tspec)
+      cls$set("public", 'thrift_spec', thrift_spec)
+      cls$set("public", 'default_spec', default_spec)
+      cls$set("public", 'tspec', tspec)
 #      if(gen_init) gen_init(cls, thrift_spec, default_spec)
       return(cls)
     },

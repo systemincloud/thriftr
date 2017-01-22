@@ -10,12 +10,12 @@ typedef i32 timestamp
 #    WORK,
 #}
 
-#struct PhoneNumber {
+struct PhoneNumber {
 #    1: optional PhoneType type = PhoneType.MOBILE,
 #    2: optional string number,
 #    3: optional container.MixItem mix_item,
-#}
-#
+}
+
 #struct Person {
 #    1: optional string name,
 #    2: optional list<PhoneNumber> phones,
