@@ -4,15 +4,15 @@ const i16 DEFAULT_LIST_SIZE = 10
 
 typedef i32 timestamp
 
-#enum PhoneType {
-#    MOBILE = 0,
-#    HOME,
-#    WORK,
-#}
+enum PhoneType {
+    MOBILE = 0,
+    HOME,
+    WORK,
+}
 
 struct PhoneNumber {
-#    1: optional PhoneType type = PhoneType.MOBILE,
-#    2: optional string number,
+    1: optional PhoneType type = PhoneType.MOBILE,
+    2: optional string number,
 #    3: optional container.MixItem mix_item,
 }
 

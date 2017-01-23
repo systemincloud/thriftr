@@ -410,7 +410,7 @@ Parser <- R6::R6Class("Parser",
                                           | IDENTIFIER
                                           |', p) {
            if(p$length() == 4) p$set(1, list(p$get(2), p$get(4)))
-      else if(p$length() == 2) pset(1, list(p$get(2), NULL))
+      else if(p$length() == 2) p$set(1, list(p$get(2), NULL))
     },
     p_struct = function(doc='struct : seen_struct "{" field_seq "}" ', p) {
       val <- private$fill_in_struct(p$get(2), p$get(4))
@@ -494,7 +494,7 @@ Parser <- R6::R6Class("Parser",
     p_ref_type = function(doc='ref_type : IDENTIFIER', p) {
       ref_type <- tail(Parser$thrift_stack, 1)[[1]]
       
-      for(name in strsplit(p$get(2), "\\.")) {
+      for(name in strsplit(p$get(2), "\\.")[[1]]) {
         ref_type <- ref_type[[name]]
         if(is.null(ref_type))
           stop(sprintf('No type found: %r, at line %d', p$get(2), p$lexer$lineno))
@@ -665,20 +665,28 @@ Parser <- R6::R6Class("Parser",
                            ttype=TType$I32
                          ))
       
-      if(!is.null(kvs)) {
+      values_to_names <- new.env()
+      names_to_values <- new.env()
+                     
+      if(!is.null(kvs) && length(kvs) > 0) {
         val <- kvs[[1]][[2]]
         if(is.null(val)) val <- -1
+        i <- 1
         for(item in kvs) {
-          if(is.null(item[[2]])) item[[2]] <- val + 1
-          val <- item[[2]]
+          if(is.null(item[[2]])) kvs[[i]][[2]] <- val + 1
+          val <- kvs[[i]][[2]]
+          i <- i + 1
         }
         for(key_val in kvs) {
           key <- key_val[[1]]
           val <- key_val[[2]]
           cls$set("public", key, val)
+          values_to_names[[as.character(val)]] <- key
+          names_to_values[[key]] <- val
         }
       }
-      
+      cls$set("public", 'VALUES_TO_NAMES', values_to_names)
+      cls$set("public", 'NAMES_TO_VALUES', names_to_values)
       return(cls$new())
     },
     make_empty_struct = function(name, ttype=TType$STRUCT) {
@@ -713,6 +721,8 @@ Parser <- R6::R6Class("Parser",
       return(cls)
     },
     ttype_spec = function(ttype, name, required=FALSE) {
+      print('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
+      print(ttype)
       if(is.integer(ttype)) return(list(ttype, name, required))
       else                  return(list(ttype[[1]], name, ttype[[2]], required))
     },
