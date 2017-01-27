@@ -646,7 +646,7 @@ Parser <- R6::R6Class("Parser",
       if(t[[1]] != TType$STRUCT) stop('')
       
       cast_struct_ = function(v) {
-#        if isinstance(v, t[1]):
+        #        if isinstance(v, t[1]):
               return(v)  # already cast
         
         if(typeof(v) != 'environment') stop('')
@@ -694,7 +694,7 @@ Parser <- R6::R6Class("Parser",
                          inherit=TPayload,
                          lock_objects=FALSE, 
                          public=list(
-                           module=tail(Parser$thrift_stack, 1)[[1]]$name,
+                           module=class(tail(Parser$thrift_stack, 1)[[1]])[[1]],
                            ttype=ttype
                          ))
       return(cls)
@@ -703,16 +703,18 @@ Parser <- R6::R6Class("Parser",
       thrift_spec  <- new.env()
       default_spec <- list()
       tspec        <- new.env()
-      # TODO
+
       for(field in fields) {
-        if(field[[1]] %in% names(thrift_spec) || field[[4]] %in% names(tspec))
+        if(as.character(field[[1]]) %in% names(thrift_spec) || field[[4]] %in% names(tspec))
           stop(sprintf('\'%d:%s\' field identifier/name has already been used',
                        field[[1]], field[[4]]))
         ttype <- field[[3]]
         thrift_spec[[as.character(field[[1]])]] <- private$ttype_spec(ttype, field[[4]], field[[2]])
         default_spec <- append(default_spec, list(field[[4]], field[[5]]))
-        tspec[[field[[4]]]][[1]] <- field[[2]]
-#        tspec[[field[[4]]]][[2]] <- ttype
+        print(field[[2]])
+        print(ttype)
+        print(field[[4]])
+        tspec[[field[[4]]]] <- list(field[[2]], ttype)
       }
       cls$set("public", 'thrift_spec', thrift_spec)
       cls$set("public", 'default_spec', default_spec)
@@ -721,8 +723,6 @@ Parser <- R6::R6Class("Parser",
       return(cls)
     },
     ttype_spec = function(ttype, name, required=FALSE) {
-      print('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
-      print(ttype)
       if(is.integer(ttype)) return(list(ttype, name, required))
       else                  return(list(ttype[[1]], name, ttype[[2]], required))
     },
