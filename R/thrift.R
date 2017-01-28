@@ -78,3 +78,10 @@ TClient <- R6Class("TClient",
     }
   )
 )
+
+TException <- R6Class("TException",
+  inherit = TPayload,
+  public = list(
+  )
+)
+

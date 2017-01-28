@@ -28,11 +28,11 @@ struct AddressBook {
     1: optional PersonMap people,
 }
 
-#exception PersonNotExistsError {
-#    1: optional string message = "Person Not Exists!",
-#}
+exception PersonNotExistsError {
+    1: optional string message = "Person Not Exists!",
+}
 
-#service AddressBookService {
+service AddressBookService {
 #    void ping();
 #    string hello(1: string name);
 #    bool add(1: Person person);
@@ -42,4 +42,4 @@ struct AddressBook {
 #    list<PhoneNumber> get_phonenumbers(1: string name, 2: i32 count);
 #    map<PhoneType, string> get_phones(1: string name);
 #    bool sleep(1: i32 ms);
-#}
+}

@@ -431,8 +431,9 @@ Parser <- R6::R6Class("Parser",
       print("p_seen_union")
     },
     p_exception = function(doc='exception : EXCEPTION IDENTIFIER "{" field_seq "}" ', p) {
-      # TODO
-      print("p_exception")
+      val <- private$make_struct(p$get(3), p$get(5))
+      tail(Parser$thrift_stack, 1)[[1]]$add_public(p$get(3), val)
+      private$add_thrift_meta('exceptions', val)
     },
     p_service = function(doc='service : SERVICE IDENTIFIER "{" function_seq "}"
                                       | SERVICE IDENTIFIER EXTENDS IDENTIFIER "{" function_seq "}"', p) {
@@ -722,6 +723,10 @@ Parser <- R6::R6Class("Parser",
       cls$set("public", 'tspec', tspec)
 #      if(gen_init) gen_init(cls, thrift_spec, default_spec)
       return(cls)
+    },
+    make_struct = function(name, fields, ttype=TType$STRUCT, gen_init=TRUE) {
+      cls <- private$make_empty_struct(name, ttype=ttype)
+      return(private$fill_in_struct(cls, fields, gen_init=gen_init))
     },
     ttype_spec = function(ttype, name, required=FALSE) {
       if(is.integer(ttype)) return(list(ttype, name, required))
