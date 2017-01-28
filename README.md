@@ -7,7 +7,7 @@ This project is a R clone of [ThriftPy](https://github.com/eleme/thriftpy).
 How to Use
 ==========
 
-     library(rly)
+     library(thriftr)
 
 The examples directory contains several different examples.
 
@@ -27,6 +27,6 @@ Example
 Here is a simple example showing a ThriftR implementation of a calculator with variables.
 	
 ```R
-library(rly)
+library(thriftr)
 	
 ```
