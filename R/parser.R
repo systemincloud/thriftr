@@ -501,6 +501,8 @@ Parser <- R6::R6Class("Parser",
       }
       
       if(typeof(ref_type) == 'environment' && 
+         !is.null(ref_type$public_fields[['ttype']])) p$set(1, list(ref_type$public_fields[['ttype']], ref_type))
+      else if(typeof(ref_type) == 'environment' && 
          !is.null(ref_type[['ttype']])) p$set(1, list(ref_type[['ttype']], ref_type))
       else                              p$set(1, ref_type)
     },
@@ -646,7 +648,9 @@ Parser <- R6::R6Class("Parser",
       if(t[[1]] != TType$STRUCT) stop('')
       
       cast_struct_ = function(v) {
-        #        if isinstance(v, t[1]):
+        print('XXXXXXXXXXXXXXXXXXXXXXXXXXX')
+        print(t[[2]])
+        #        if isinstance(v, t[[2]]):
               return(v)  # already cast
         
         if(typeof(v) != 'environment') stop('')
@@ -711,9 +715,6 @@ Parser <- R6::R6Class("Parser",
         ttype <- field[[3]]
         thrift_spec[[as.character(field[[1]])]] <- private$ttype_spec(ttype, field[[4]], field[[2]])
         default_spec <- append(default_spec, list(field[[4]], field[[5]]))
-        print(field[[2]])
-        print(ttype)
-        print(field[[4]])
         tspec[[field[[4]]]] <- list(field[[2]], ttype)
       }
       cls$set("public", 'thrift_spec', thrift_spec)

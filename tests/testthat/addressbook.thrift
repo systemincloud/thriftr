@@ -13,20 +13,20 @@ enum PhoneType {
 struct PhoneNumber {
     1: optional PhoneType type = PhoneType.MOBILE,
     2: optional string number,
-#    3: optional container.MixItem mix_item,
+    3: optional container.MixItem mix_item,
 }
 
-#struct Person {
-#    1: optional string name,
-#    2: optional list<PhoneNumber> phones,
-#    4: optional timestamp created_at,
-#}
+struct Person {
+    1: optional string name,
+    2: optional list<PhoneNumber> phones,
+    4: optional timestamp created_at,
+}
 
-#typedef map<string, Person> PersonMap
+typedef map<string, Person> PersonMap
 
-#struct AddressBook {
-#    1: optional PersonMap people,
-#}
+struct AddressBook {
+    1: optional PersonMap people,
+}
 
 #exception PersonNotExistsError {
 #    1: optional string message = "Person Not Exists!",
