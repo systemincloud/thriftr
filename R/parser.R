@@ -437,15 +437,45 @@ Parser <- R6::R6Class("Parser",
     },
     p_service = function(doc='service : SERVICE IDENTIFIER "{" function_seq "}"
                                       | SERVICE IDENTIFIER EXTENDS IDENTIFIER "{" function_seq "}"', p) {
-      # TODO
-      print("p_service")
+      thrift <- tail(Parser$thrift_stack, 1)[[1]]
+                                
+      if(p$length() == 8) {
+        extends <- thrift
+        for(name in strsplit(p$get(5), "\\.")[[1]]) {
+          extends <- extends[[name]]
+          if(is.null(extends))
+            stop(sprintf('Can\'t find service %s for service %s to extend',
+                          p$get(5), p$get(3)))
+        }
+        
+        if(!is.null(extends[['thrift_services']]))
+          stop(sprintf('Can\'t extends %s, not a service', p$get(5)))
+        
+      } else extends <- NULL
+      
+      val <- private$make_service(p$get(3), p$get(p$length() - 1), extends)
+      thrift[[p$get(3)]] <- val
+      private$add_thrift_meta('services', val)
     },
     p_function = function(doc='function : ONEWAY function_type IDENTIFIER "(" field_seq ")" throws
                                         | ONEWAY function_type IDENTIFIER "(" field_seq ")"
                                         | function_type IDENTIFIER "(" field_seq ")" throws
                                         | function_type IDENTIFIER "(" field_seq ")" ', p) {
-      # TODO
-      print("p_function")
+      oneway <- NA
+      base   <- NA
+      throws <- NA
+      if(p$get(2)[[1]] == 'oneway') {
+        oneway <- TRUE
+        base   <- 2
+      } else {
+        oneway <- FALSE
+        base   <- 1
+      }
+
+      if(p$get(p$length()) == ')') throws <- list()
+      else                         throws <- p$get(p$length())
+                                  
+      p$set(1, list(oneway, p$get(base + 1), p$get(base + 2), p$get(base + 4), throws))
     },
     p_function_seq = function(doc='function_seq : function sep function_seq
                                                 | function function_seq
@@ -457,8 +487,8 @@ Parser <- R6::R6Class("Parser",
     },
     p_function_type = function(doc='function_type : field_type
                                                   | VOID', p) {
-      # TODO
-      print("p_function_type")
+      if(p$get(2)[[1]] == 'void') p$set(1, TType$VOID)
+      else                        p$set(1, p$get(2)[[1]])
     },
     p_field_seq = function(doc='field_seq : field sep field_seq
                                           | field field_seq
@@ -727,6 +757,10 @@ Parser <- R6::R6Class("Parser",
     make_struct = function(name, fields, ttype=TType$STRUCT, gen_init=TRUE) {
       cls <- private$make_empty_struct(name, ttype=ttype)
       return(private$fill_in_struct(cls, fields, gen_init=gen_init))
+    },
+    make_service = function(name, funcs, extends) {
+      # TODO
+      print("make_service")
     },
     ttype_spec = function(ttype, name, required=FALSE) {
       if(is.integer(ttype)) return(list(ttype, name, required))
