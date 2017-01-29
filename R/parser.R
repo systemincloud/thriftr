@@ -488,7 +488,7 @@ Parser <- R6::R6Class("Parser",
     p_function_type = function(doc='function_type : field_type
                                                   | VOID', p) {
       if(p$get(2)[[1]] == 'void') p$set(1, TType$VOID)
-      else                        p$set(1, p$get(2)[[1]])
+      else                        p$set(1, p$get(2))
     },
     p_field_seq = function(doc='field_seq : field sep field_seq
                                           | field field_seq
@@ -761,6 +761,7 @@ Parser <- R6::R6Class("Parser",
     make_service = function(name, funcs, extends) {
       # TODO
       print("make_service")
+      
     },
     ttype_spec = function(ttype, name, required=FALSE) {
       if(is.integer(ttype)) return(list(ttype, name, required))
