@@ -1,8 +1,8 @@
 /target
-DESCRIPTION
 .Rproj.user
 .Rhistory
 .RData
+DESCRIPTION
 src/*.o
 src/*.so
 src/*.dll
