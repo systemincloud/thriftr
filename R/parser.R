@@ -1,6 +1,6 @@
 # MIT License
 #
-# Copyright (c) 2016 System in Cloud - Marek Jagielski
+# Copyright (c) 2018 System in Cloud - Marek Jagielski
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -8,7 +8,7 @@
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-#    
+#
 #    The above copyright notice and this permission notice shall be included in all
 # copies or substantial portions of the Software.
 #
@@ -24,13 +24,13 @@
 #'
 #' The module loaded and objects inside may only be pickled if module_name
 #' was provided.
-#'    
+#'
 #' @param path file path to parse, should be a string ending with '.thrift'
 #' @param module_name the name for parsed module, the default is the basename
 #'                    without extension of `path`
 #' @param include_dirs directories to find thrift files while processing
 #'                     the `include` directive, by default: ['.']
-#' 
+#'
 #' @return Thrift R6 class instance
 #'
 #' @export
@@ -38,6 +38,8 @@ load <- function(path, module_name=NA, include_dirs=NA) {
   thrift <- parse(path, module_name, include_dirs=include_dirs)
   return(thrift)
 }
+
+# lexer
 
 LITERALS = ':;,=*{}()<>[]'
 
@@ -239,7 +241,7 @@ Lexer <- R6::R6Class("Lexer",
       maps[['\\']] <- '\\'
       maps[['\'']] <- '\''
       maps[['"']]  <- '\"'
-      
+
       i <- 1
       length <- nchar(s)
       val <- ''
@@ -254,7 +256,7 @@ Lexer <- R6::R6Class("Lexer",
         } else val <- paste(val, substr(s, i, i), sep = "")
         i <- i + 1
      }
-    
+
       t$value <- val
       return(t)
     },
@@ -270,12 +272,16 @@ Lexer <- R6::R6Class("Lexer",
   )
 )
 
+# parser
+
 #' @importFrom utils tail
 Parser <- R6::R6Class("Parser",
   public = list(
     thrift_stack = list(),
-    
-    tokens = TOKENS,   
+    include_dirs_ = list('.'),
+    thrift_cache = new.env(hash=TRUE),
+
+    tokens = TOKENS,
     p_error = function(p) {
       if(is.null(p)) stop("Grammar error at EOF")
       else           stop(sprintf("Grammar error %s at '%s'", p$value, p$lexer$lineno))
@@ -295,8 +301,8 @@ Parser <- R6::R6Class("Parser",
       thrift <- tail(Parser$thrift_stack, 1)[[1]]
       if(is.null(thrift$thrift_file))
         stop('Unexcepted include statement while loading from file like object.')
-      
-      replace_include_dirs <- if(dirname(thrift$thrift_file) != '.') 
+
+      replace_include_dirs <- if(dirname(thrift$thrift_file) != '.')
                                 append(include_dirs_, dirname(thrift$thrift_file), 0)
                               else include_dirs_
       for(include_dir in replace_include_dirs) {
@@ -311,8 +317,9 @@ Parser <- R6::R6Class("Parser",
       stop(sprintf('Couldn\'t include thrift %s in any directories provided', p$get(3)))
     },
     p_namespace = function(doc='namespace : NAMESPACE namespace_scope IDENTIFIER', p) {
-      # TODO
-      print("p_namespace")
+     # namespace is useless in thriftpy
+     # if p[2] == 'py' or p[2] == '*':
+     #     setattr(thrift_stack[-1], '__name__', p[3])
     },
     p_namespace_scope = function(doc='namespace_scope : "*"
                                                       | IDENTIFIER', p) {
@@ -337,7 +344,7 @@ Parser <- R6::R6Class("Parser",
       }, error = function(e) { })
       if(is.null(val))
         stop(sprintf('Type error for constant %s at line %d', p$get(4), p$lexer$lineno))
-      
+
       tail(Parser$thrift_stack, 1)[[1]]$add_public(p$get(4), val)
       private$add_thrift_meta('consts', val)
     },
@@ -379,7 +386,7 @@ Parser <- R6::R6Class("Parser",
         child <- child[[name]]
         if(is.null(child))
           stop(sprintf('Can\'t find name %s at line %d', p$get(2), p$lexer$lineno))
-        
+
         if(is.null(private$get_ttype(child)) || private$get_ttype(child) == TType$I32) {
           # child is a constant or enum value
           p$set(1, child)
@@ -438,7 +445,7 @@ Parser <- R6::R6Class("Parser",
     p_service = function(doc='service : SERVICE IDENTIFIER "{" function_seq "}"
                                       | SERVICE IDENTIFIER EXTENDS IDENTIFIER "{" function_seq "}"', p) {
       thrift <- tail(Parser$thrift_stack, 1)[[1]]
-                                
+
       if(p$length() == 8) {
         extends <- thrift
         for(name in strsplit(p$get(5), "\\.")[[1]]) {
@@ -447,12 +454,12 @@ Parser <- R6::R6Class("Parser",
             stop(sprintf('Can\'t find service %s for service %s to extend',
                           p$get(5), p$get(3)))
         }
-        
+
         if(!is.null(extends[['thrift_services']]))
           stop(sprintf('Can\'t extends %s, not a service', p$get(5)))
-        
+
       } else extends <- NULL
-      
+
       val <- private$make_service(p$get(3), p$get(p$length() - 1), extends)
       thrift[[p$get(3)]] <- val
       private$add_thrift_meta('services', val)
@@ -474,7 +481,7 @@ Parser <- R6::R6Class("Parser",
 
       if(p$get(p$length()) == ')') throws <- list()
       else                         throws <- p$get(p$length())
-                                  
+
       p$set(1, list(oneway, p$get(base + 1), p$get(base + 2), p$get(base + 4), throws))
     },
     p_function_seq = function(doc='function_seq : function sep function_seq
@@ -505,8 +512,8 @@ Parser <- R6::R6Class("Parser",
       }
       if(is.null(val))
         stop(sprintf('Type error for field %s at line %d', p$get(5), p$lexer$lineno))
-      
-      
+
+
       p$set(1, list(p$get(2), p$get(3), p$get(4), p$get(5), val))
     },
     p_field_id = function(doc='field_id : INTCONSTANT ":" ', p) {
@@ -524,16 +531,16 @@ Parser <- R6::R6Class("Parser",
     },
     p_ref_type = function(doc='ref_type : IDENTIFIER', p) {
       ref_type <- tail(Parser$thrift_stack, 1)[[1]]
-      
+
       for(name in strsplit(p$get(2), "\\.")[[1]]) {
         ref_type <- ref_type[[name]]
         if(is.null(ref_type))
           stop(sprintf('No type found: %r, at line %d', p$get(2), p$lexer$lineno))
       }
-      
-      if(typeof(ref_type) == 'environment' && 
+
+      if(typeof(ref_type) == 'environment' &&
          !is.null(ref_type$public_fields[['ttype']])) p$set(1, list(ref_type$public_fields[['ttype']], ref_type))
-      else if(typeof(ref_type) == 'environment' && 
+      else if(typeof(ref_type) == 'environment' &&
          !is.null(ref_type[['ttype']])) p$set(1, list(ref_type[['ttype']], ref_type))
       else                              p$set(1, ref_type)
     },
@@ -574,9 +581,16 @@ Parser <- R6::R6Class("Parser",
     }
   ),
   private = list(
-    add_thrift_meta = function(key, value) {
+    add_thrift_meta = function(key, val) {
       thrift <- tail(Parser$thrift_stack, 1)[[1]]
-      # TODO
+
+      if(is.null(thrift$thrift_meta)) {
+        thrift$add_public('thrift_meta', new.env(hash=TRUE))
+      }
+      if(is.null(thrift$thrift_meta[[key]])) {
+        thrift$thrift_meta[[key]] <- list()
+      }
+      thrift$thrift_meta[[key]] <- append(thrift$thrift_meta[[key]], val)
     },
     parse_seq = function(p) {
            if(p$length() == 4) p$set(1, append(list(p$get(2)), p$get(4)))
@@ -633,7 +647,7 @@ Parser <- R6::R6Class("Parser",
     },
     cast_list = function(t) {
       if(t[[1]] != TType$LIST) stop('')
-      
+
       cast_list_ = function(v) {
         if(typeof(v) != "list") stop('')
         v <- lapply(v, private$cast(t[[2]]))
@@ -653,7 +667,7 @@ Parser <- R6::R6Class("Parser",
     },
     cast_map = function(t) {
       if(t[[1]] != TType$MAP) stop('')
-      
+
       cast_map_ = function(v) {
         if(typeof(v) != "environment") stop('')
         for(key in names(v)) {
@@ -670,23 +684,23 @@ Parser <- R6::R6Class("Parser",
         if(typeof(v) != "integer") stop('')
         if(v %in% lapply(ls(t[[2]]), function(x) t[[2]][[x]]))
           return(v)
-        stop(sprintf('Couldn\'t find a named value in enum %s for value %d', 
+        stop(sprintf('Couldn\'t find a named value in enum %s for value %d',
                      t[[2]]$name, v))
       }
       return(cast_enum_)
     },
     cast_struct = function(t) {   # struct/exception/union
       if(t[[1]] != TType$STRUCT) stop('')
-      
+
       cast_struct_ = function(v) {
         print('XXXXXXXXXXXXXXXXXXXXXXXXXXX')
         print(t[[2]])
         #        if isinstance(v, t[[2]]):
               return(v)  # already cast
-        
+
         if(typeof(v) != 'environment') stop('')
         tspec <- t[[2]]$tspec
-        
+
         # TODO
       }
       return(cast_struct_)
@@ -694,15 +708,15 @@ Parser <- R6::R6Class("Parser",
     make_enum = function(name, kvs) {
       cls <- R6::R6Class(name,
                          inherit=TPayload,
-                         lock_objects=FALSE, 
+                         lock_objects=FALSE,
                          public=list(
                            module=tail(Parser$thrift_stack, 1)[[1]]$name,
                            ttype=TType$I32
                          ))
-      
+
       values_to_names <- new.env()
       names_to_values <- new.env()
-                     
+
       if(!is.null(kvs) && length(kvs) > 0) {
         val <- kvs[[1]][[2]]
         if(is.null(val)) val <- -1
@@ -727,7 +741,7 @@ Parser <- R6::R6Class("Parser",
     make_empty_struct = function(name, ttype=TType$STRUCT) {
       cls <- R6::R6Class(name,
                          inherit=TPayload,
-                         lock_objects=FALSE, 
+                         lock_objects=FALSE,
                          public=list(
                            module=class(tail(Parser$thrift_stack, 1)[[1]])[[1]],
                            ttype=ttype
@@ -735,9 +749,9 @@ Parser <- R6::R6Class("Parser",
       return(cls)
     },
     fill_in_struct = function(cls, fields, gen_init=TRUE) {
-      thrift_spec  <- new.env()
+      thrift_spec  <- new.env(hash=TRUE)
       default_spec <- list()
-      tspec        <- new.env()
+      tspec        <- new.env(hash=TRUE)
 
       for(field in fields) {
         if(as.character(field[[1]]) %in% names(thrift_spec) || field[[4]] %in% names(tspec))
@@ -745,13 +759,13 @@ Parser <- R6::R6Class("Parser",
                        field[[1]], field[[4]]))
         ttype <- field[[3]]
         thrift_spec[[as.character(field[[1]])]] <- private$ttype_spec(ttype, field[[4]], field[[2]])
-        default_spec <- append(default_spec, list(field[[4]], field[[5]]))
+        default_spec[[length(default_spec)+1]] <- list(field[[4]], field[[5]])
         tspec[[field[[4]]]] <- list(field[[2]], ttype)
       }
       cls$set("public", 'thrift_spec', thrift_spec)
       cls$set("public", 'default_spec', default_spec)
       cls$set("public", 'tspec', tspec)
-#      if(gen_init) gen_init(cls, thrift_spec, default_spec)
+      if(gen_init) gen_init(cls, thrift_spec, default_spec)
       return(cls)
     },
     make_struct = function(name, fields, ttype=TType$STRUCT, gen_init=TRUE) {
@@ -761,30 +775,29 @@ Parser <- R6::R6Class("Parser",
     make_service = function(name, funcs, extends) {
       # TODO
       print("make_service")
-      
+
     },
     ttype_spec = function(ttype, name, required=FALSE) {
       if(is.integer(ttype)) return(list(ttype, name, required))
       else                  return(list(ttype[[1]], name, ttype[[2]], required))
     },
     get_ttype = function(inst, default_ttype=NULL) {
-      if(typeof(inst) == "environment" && 
+      if(typeof(inst) == "environment" &&
           !is.null(inst$ttype)) return(inst$ttype)
       else                      return(default_ttype)
     }
   )
 )
 
-include_dirs_ <- list('.')
-thrift_cache  <- new.env(hash=TRUE)
+
 
 #' Parse a single thrift file to R6 class instance
-#' 
+#'
 #' @importFrom R6 R6Class
 #' @importFrom rly lex
 #' @importFrom rly yacc
 #' @importFrom utils head
-#' 
+#'
 #' @param path file path to parse, should be a string ending with '.thrift'
 #' @param module_name the name for parsed module, the default is the basename
 #'                    without extension of `path`
@@ -795,56 +808,62 @@ thrift_cache  <- new.env(hash=TRUE)
 #' @param enable_cache if this is set to be `TRUE`, parsed module will be
 #'                     cached, this is enabled by default. If `module_name`
 #'                     is provided, use it as cache key, else use the `path`
-#' 
+#'
 #' @return Thrift module
-parse = function(path, 
-                 module_name=NA, 
-                 include_dirs=NA, 
-                 lexer=NA, 
-                 parser=NA, 
+parse = function(path,
+                 module_name=NA,
+                 include_dirs=NA,
+                 lexer=NA,
+                 parser=NA,
                  enable_cache=TRUE) {
-                       
+
   # dead include checking on current stack
   for(thrift in Parser$thrift_stack) {
-    if(!is.null(thrift$thrift_file) && path == thrift$thrift_file)
-      stop(sprintf('Dead including on %s', path))
+     if(!is.null(thrift$thrift_file) && path == thrift$thrift_file)
+       stop(sprintf('Dead including on %s', path))
   }
-  
+
   cache_key <- if(is.na(module_name)) path else module_name
-  
-  if(enable_cache && cache_key %in% names(thrift_cache))
+
+  if(enable_cache && cache_key %in% names(Parser$thrift_cache))
     return(thrift_cache[[cache_key]])
-  
+
   if(is.na(lexer))  lexer  <- rly::lex(Lexer)
   if(is.na(parser)) parser <- rly::yacc(Parser)
-  
-  if(!is.na(include_dirs)) include_dirs_ <- include_dirs
-  
+
+  if(!is.na(include_dirs)) Parser$include_dirs_ <- include_dirs
+
   if(!endsWith(path, '.thrift'))
     stop('Path should end with .thrift')
-  
-  data <- readChar(path, file.info(path)$size)
-  
+
+  if(startsWith(path, 'http://') || startsWith(path, 'https://'))
+    data <- url(path, "r+")
+  else
+    data <- readChar(path, file.info(path)$size)
+
   if(!is.na(module_name) && !endsWith(module_name, '_thrift'))
     stop('ThriftPy can only generate module with \'_thrift\' suffix')
-  
+
   if(is.na(module_name)) {
     module_name <- strsplit(basename(path), "\\.")[[1]]
   }
-  
-  thrift <- R6::R6Class(module_name, 
-                        lock_objects=FALSE, 
-                        public=list(thrift_file=path,
-                                    add_public = function(name, obj) {
-                                      self[[name]] <- obj
-#                                     environment(self[[name]]) <- environment(self$add_public)
-                                    }))$new()
+
+  thrift <- R6::R6Class(
+    module_name,
+    lock_objects=FALSE,
+    public=list(thrift_file=path,
+      add_public = function(name, obj) {
+        self[[name]] <- obj
+        environment(self[[name]]) <- environment(self$add_public)
+      }
+    )
+  )$new()
   Parser$thrift_stack <- append(Parser$thrift_stack, thrift)
   lexer$lineno <- 1
   parser$parse(data, lexer)
   Parser$thrift_stack <- head(Parser$thrift_stack, -1)
-  
-  if(enable_cache) thrift_cache[[cache_key]] <- thrift
-  
+
+  if(enable_cache) Parser$thrift_cache[[cache_key]] <- thrift
+
   return(thrift)
 }

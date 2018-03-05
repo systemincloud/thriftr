@@ -7,3 +7,5 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^\.pydevproject$
+^README.md$
+^NEWS.md$
