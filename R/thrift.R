@@ -27,18 +27,19 @@
 #' @export
 init_func_generator = function(cls, spec) {
   if(length(spec) == 0) return(function() { })
-  force(spec)
-  func <- function(...) {
-    args <- list(...)
-    cat(str(spec))
-    #spec_ <- assign(spec_, 'spec', inherits=TRUE)#, env = .GlobalEnv)
-    for(s in spec) {
-      cat(str(s))
-    }
-    #self[[name]] <- obj
-    #environment(self[[name]]) <- environment(self$add_public)
-    #cat(str(dots[['xx']]))
+
+  args <- alist()
+  for(s in spec) {
+    args[[s[[1]]]] <- s[[2]]
   }
+
+  func <- function() {
+    argg <- as.list(environment())
+    for(arg_name in names(argg)) {
+      self[[arg_name]] <- argg[[arg_name]]
+    }
+  }
+  formals(func) <- args
 
   return(func)
 }
