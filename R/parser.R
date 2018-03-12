@@ -366,7 +366,7 @@ Parser <- R6::R6Class("Parser",
       private$parse_seq(p)
     },
     p_const_map = function(doc='const_map : "{" const_map_seq "}" ', p) {
-      dict <- new.env()
+      dict <- new.env(hash=TRUE)
       for(it in p$get(3))
         dict[[it[[1]]]] <- it[[2]]
       p$set(1, dict)
@@ -714,8 +714,8 @@ Parser <- R6::R6Class("Parser",
                            ttype=TType$I32
                          ))
 
-      values_to_names <- new.env()
-      names_to_values <- new.env()
+      values_to_names <- new.env(hash=TRUE)
+      names_to_values <- new.env(hash=TRUE)
 
       if(!is.null(kvs) && length(kvs) > 0) {
         val <- kvs[[1]][[2]]
@@ -854,7 +854,6 @@ parse = function(path,
     public=list(thrift_file=path,
       add_public = function(name, obj) {
         self[[name]] <- obj
-        environment(self[[name]]) <- environment(self$add_public)
       }
     )
   )$new()

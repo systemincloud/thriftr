@@ -47,7 +47,7 @@ init_func_generator = function(cls, spec) {
 #' TType
 #'
 #' @export
-TType <- new.env()
+TType <- new.env(hash=TRUE)
 TType$STOP   <- as.integer(0)
 TType$VOID   <- as.integer(1)
 TType$BOOL   <- as.integer(2)
@@ -70,7 +70,7 @@ TType$UTF16  <- as.integer(17)
 #' TMessageType
 #'
 #' @export
-TMessageType <- new.env()
+TMessageType <- new.env(hash=TRUE)
 TMessageType$CALL      <- as.integer(1)
 TMessageType$REPLY     <- as.integer(2)
 TMessageType$EXCEPTION <- as.integer(3)
