@@ -4,7 +4,7 @@ library(testthat)
 
 context("const")
 
-thrift <- thriftr::load("/home/lupus/data/git/thriftr/tests/testthat/const.thrift")
+thrift <- thriftr::load("const.thrift")
 
 test_that("test_num_const", {
   expect_equal(thrift$NEGATIVE_I16,    -10)
