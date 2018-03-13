@@ -30,5 +30,5 @@ struct Person {
 const Person tom = {"name": "tom"}
 
 # https://github.com/eleme/thriftpy/issues/75
-#const map<Country, string> country_map = {
-#    Country.US: "US", Country.UK: "UK", Country.CA: "CA", Country.CN: "CN"}
+const map<Country, string> country_map = {
+    Country.US: "US", Country.UK: "UK", Country.CA: "CA", Country.CN: "CN"}

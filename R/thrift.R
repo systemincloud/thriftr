@@ -22,7 +22,7 @@
 
 #' init_func_generator
 #'
-#' Generate `intialize` function based on TPayload.default_spec
+#' Generate `initialize` function based on TPayload$default_spec
 #'
 #' @export
 init_func_generator = function(cls, spec) {

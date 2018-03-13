@@ -303,8 +303,8 @@ Parser <- R6::R6Class("Parser",
         stop('Unexcepted include statement while loading from file like object.')
 
       replace_include_dirs <- if(dirname(thrift$thrift_file) != '.')
-                                append(include_dirs_, dirname(thrift$thrift_file), 0)
-                              else include_dirs_
+                                append(Parser$include_dirs_, dirname(thrift$thrift_file), 0)
+                              else Parser$include_dirs_
       for(include_dir in replace_include_dirs) {
         path <- file.path(include_dir, p$get(3))
         if(file.exists(path)) {
@@ -367,8 +367,9 @@ Parser <- R6::R6Class("Parser",
     },
     p_const_map = function(doc='const_map : "{" const_map_seq "}" ', p) {
       dict <- new.env(hash=TRUE)
-      for(it in p$get(3))
-        dict[[it[[1]]]] <- it[[2]]
+      for(it in p$get(3)) {
+        dict[[toString(it[[1]])]] <- it[[2]]
+      }
       p$set(1, dict)
     },
     p_const_map_seq = function(doc='const_map_seq : const_map_item sep const_map_seq
@@ -671,7 +672,7 @@ Parser <- R6::R6Class("Parser",
       cast_map_ = function(v) {
         if(typeof(v) != "environment") stop('')
         for(key in names(v)) {
-          v[[private$cast(t[[2]][[1]])(key)]] <- private$cast(t[[2]][[2]])(v[[key]])
+          v[[toString(private$cast(t[[2]][[1]])(key))]] <- private$cast(t[[2]][[2]])(v[[key]])
         }
         return(v)
       }
@@ -681,6 +682,7 @@ Parser <- R6::R6Class("Parser",
       if(t[[1]] != TType$I32) stop('')
 
       cast_enum_ = function(v) {
+        if(typeof(v) == "character") v <- strtoi(v)
         if(typeof(v) != "integer") stop('')
         if(v %in% lapply(ls(t[[2]]), function(x) t[[2]][[x]]))
           return(v)
@@ -693,8 +695,6 @@ Parser <- R6::R6Class("Parser",
       if(t[[1]] != TType$STRUCT) stop('')
 
       cast_struct_ = function(v) {
-        print('XXXXXXXXXXXXXXXXXXXXXXXXXXX')
-        print(t[[2]])
         #        if isinstance(v, t[[2]]):
               return(v)  # already cast
 
@@ -706,13 +706,15 @@ Parser <- R6::R6Class("Parser",
       return(cast_struct_)
     },
     make_enum = function(name, kvs) {
-      cls <- R6::R6Class(name,
-                         inherit=TPayload,
-                         lock_objects=FALSE,
-                         public=list(
-                           module=tail(Parser$thrift_stack, 1)[[1]]$name,
-                           ttype=TType$I32
-                         ))
+      cls <- R6::R6Class(
+        name,
+        inherit=TPayload,
+        lock_objects=FALSE,
+        public=list(
+          module=tail(Parser$thrift_stack, 1)[[1]]$name,
+          ttype=TType$I32
+        )
+      )
 
       values_to_names <- new.env(hash=TRUE)
       names_to_values <- new.env(hash=TRUE)
