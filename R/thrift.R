@@ -79,7 +79,10 @@ TMessageType$ONEWAY    <- as.integer(4)
 
 gen_init = function(cls, thrift_spec=NA, default_spec=NA) {
   if(!is.na(thrift_spec)) cls$thrift_spec <- thrift_spec
-  if(!is.na(default_spec)) cls$set("public", 'initialize', init_func_generator(cls, default_spec))
+  if(!is.na(default_spec)) {
+    cls$set("public", 'initialize', init_func_generator(cls, default_spec))
+    cls$default_spec <- default_spec
+  }
   return(cls)
 }
 

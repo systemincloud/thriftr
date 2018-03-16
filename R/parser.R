@@ -768,6 +768,7 @@ Parser <- R6::R6Class("Parser",
       cls$set("public", 'default_spec', default_spec)
       cls$set("public", 'tspec', tspec)
       if(gen_init) gen_init(cls, thrift_spec, default_spec)
+      cls$set("public", 'xxx', 'yyy')
       return(cls)
     },
     make_struct = function(name, fields, ttype=TType$STRUCT, gen_init=TRUE) {

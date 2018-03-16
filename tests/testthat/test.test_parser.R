@@ -37,41 +37,107 @@ test_that("test_include", {
 })
 
 test_that("test_tutorial", {
+#  thrift <- thriftr::load('parser-cases/tutorial.thrift',
+#    include_dirs=list('./parser-cases'))
+# TODO
+})
+
+test_that("test_e_type_error", {
+  # expect_error(thriftr::load('parser-cases/e_type_error_0.thrift'), NA)
+# TODO
+})
+
+test_that("test_value_ref", {
+  thrift <- thriftr::load('parser-cases/value_ref.thrift')
+  expect_equal(thrift$container$key[[1]], 1)
+  expect_equal(thrift$container$key[[2]], 2)
+  expect_equal(thrift$container$key[[3]], 3)
+  expect_equal(thrift$lst[[1]], 39)
+  expect_equal(thrift$lst[[2]], 899)
+  expect_equal(thrift$lst[[3]], 123)
+})
+
+test_that("test_type_ref", {
+  thrift <- thriftr::load('parser-cases/type_ref.thrift')
+  expect_equal(thrift$jerry$name, 'jerry')
+  expect_equal(thrift$jerry$age, 26)
+  expect_equal(thrift$jerry$country, thrift$type_ref_shared$Country$US)
+  expect_equal(thrift$book$name, 'Hello World')
+  expect_equal(thrift$book$writer$name, 'jerry')
+  expect_equal(thrift$book$writer$age, 26)
+  expect_equal(thrift$book$writer$country, thrift$type_ref_shared$Country$US)
+})
+
+test_that("test_e_value_ref", {
   # TODO
 })
 
-# test_that("test_e_type_error", {
-#   # TODO
-# })
+test_that("test_enums", {
+  thrift <- thriftr::load('parser-cases/enums.thrift')
+  expect_equal(thrift$Lang$C, 0)
+  expect_equal(thrift$Lang$Go, 1)
+  expect_equal(thrift$Lang$Java, 2)
+  expect_equal(thrift$Lang$Javascript, 3)
+  expect_equal(thrift$Lang$PHP, 4)
+  expect_equal(thrift$Lang$Python, 5)
+  expect_equal(thrift$Lang$Ruby, 6)
+  expect_equal(thrift$Country$US, 1)
+  expect_equal(thrift$Country$UK, 2)
+  expect_equal(thrift$Country$CN, 3)
+  expect_equal(thrift$OS$OSX, 0)
+  expect_equal(thrift$OS$Win, 3)
+  expect_equal(thrift$OS$Linux, 4)
+})
+
+test_that("test_structs", {
+  thrift <- thriftr::load('parser-cases/structs.thrift')
+  expect_equal(thrift$Person$thrift_spec[['1']][[1]], thriftr::TType$STRING)
+  expect_equal(thrift$Person$thrift_spec[['1']][[2]], 'name')
+  expect_equal(thrift$Person$thrift_spec[['1']][[3]], FALSE)
+  expect_equal(thrift$Person$thrift_spec[['2']][[1]], thriftr::TType$STRING)
+  expect_equal(thrift$Person$thrift_spec[['2']][[2]], 'address')
+  expect_equal(thrift$Person$thrift_spec[['2']][[3]], FALSE)
+  expect_equal(thrift$Person$default_spec[[1]][[1]], 'name')
+  expect_equal(thrift$Person$default_spec[[1]][[2]], NA)
+  expect_equal(thrift$Person$default_spec[[2]][[1]], 'address')
+  expect_equal(thrift$Person$default_spec[[2]][[2]], NA)
+  expect_equal(thrift$Email$thrift_spec[['1']][[1]], thriftr::TType$STRING)
+  expect_equal(thrift$Email$thrift_spec[['1']][[2]], 'subject')
+  expect_equal(thrift$Email$thrift_spec[['1']][[3]], FALSE)
+  expect_equal(thrift$Email$thrift_spec[['2']][[1]], thriftr::TType$STRING)
+  expect_equal(thrift$Email$thrift_spec[['2']][[2]], 'content')
+  expect_equal(thrift$Email$thrift_spec[['2']][[3]], FALSE)
+  expect_equal(thrift$Email$thrift_spec[['3']][[1]], thriftr::TType$STRUCT)
+  expect_equal(thrift$Email$thrift_spec[['3']][[2]], 'sender')
+  expect_equal(thrift$Email$thrift_spec[['3']][[3]], thrift$Person)
+  expect_equal(thrift$Email$thrift_spec[['3']][[4]], FALSE)
+  expect_equal(thrift$Email$thrift_spec[['4']][[1]], thriftr::TType$STRUCT)
+  expect_equal(thrift$Email$thrift_spec[['4']][[2]], 'receiver')
+  expect_equal(thrift$Email$thrift_spec[['4']][[3]], thrift$Person)
+  expect_equal(thrift$Email$thrift_spec[['4']][[4]], TRUE)
+  expect_equal(thrift$Email$default_spec[[1]][[1]], 'subject')
+  expect_equal(thrift$Email$default_spec[[1]][[2]], 'Subject')
+  expect_equal(thrift$Email$default_spec[[2]][[1]], 'content')
+  expect_equal(thrift$Email$default_spec[[2]][[2]], NA)
+  expect_equal(thrift$Email$default_spec[[3]][[1]], 'sender')
+  expect_equal(thrift$Email$default_spec[[3]][[2]], NA)
+  expect_equal(thrift$Email$default_spec[[4]][[1]], 'receiver')
+  expect_equal(thrift$Email$default_spec[[4]][[2]], NA)
+  expect_equal(thrift$email$subject, 'Hello')
+  expect_equal(thrift$email$content, 'Long time no see')
+  expect_equal(thrift$email$sender$name, 'jack')
+  expect_equal(thrift$email$sender$address, 'jack@gmail.com')
+  expect_equal(thrift$email$receiver$name, 'chao')
+  expect_equal(thrift$email$receiver$address, 'chao@gmail.com')
+})
 #
-# test_that("test_value_ref", {
-#   # TODO
-# })
-#
-# test_that("test_type_ref", {
-#   # TODO
-# })
-#
-# test_that("test_e_value_ref", {
-#   # TODO
-# })
-#
-# test_that("test_enums", {
-#   # TODO
-# })
-#
-# test_that("test_structs", {
-#   # TODO
-# })
-#
-# test_that("test_e_structs", {
-#   # TODO
-# })
-#
-# test_that("test_service", {
-#   # TODO
-#   #thrift <- thriftr::load('parser-cases/service.thrift')
-# })
+test_that("test_e_structs", {
+  # TODO
+})
+
+test_that("test_service", {
+  thrift <- thriftr::load('parser-cases/service.thrift')
+})
 #
 # test_that("test_service_extends", {
 #   # TODO
@@ -98,9 +164,9 @@ test_that("test_tutorial", {
 #   # TODO
 # })
 #
-# test_that("test_thrift_meta", {
-#   # TODO
-# })
+test_that("test_thrift_meta", {
+  # TODO
+})
 #
 # test_that("test_load_fp", {
 #   # TODO
