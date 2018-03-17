@@ -77,12 +77,10 @@ TMessageType$EXCEPTION <- as.integer(3)
 TMessageType$ONEWAY    <- as.integer(4)
 
 
-gen_init = function(cls, thrift_spec=NA, default_spec=NA) {
-  if(!is.na(thrift_spec)) cls$thrift_spec <- thrift_spec
-  if(!is.na(default_spec)) {
-    cls$set("public", 'initialize', init_func_generator(cls, default_spec))
-    cls$default_spec <- default_spec
-  }
+gen_init = function(cls, thrift_spec=NULL, default_spec=NULL) {
+  if(!is.null(thrift_spec)) cls$thrift_spec <- thrift_spec
+  if(!is.null(default_spec))
+    cls$set('public', 'initialize', init_func_generator(cls, default_spec))
   return(cls)
 }
 

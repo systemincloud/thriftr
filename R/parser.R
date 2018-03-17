@@ -741,13 +741,15 @@ Parser <- R6::R6Class("Parser",
       return(cls$new())
     },
     make_empty_struct = function(name, ttype=TType$STRUCT) {
-      cls <- R6::R6Class(name,
-                         inherit=TPayload,
-                         lock_objects=FALSE,
-                         public=list(
-                           module=class(tail(Parser$thrift_stack, 1)[[1]])[[1]],
-                           ttype=ttype
-                         ))
+      cls <- R6::R6Class(
+        name,
+        inherit=TPayload,
+        lock_objects=FALSE,
+        public=list(
+          module=class(tail(Parser$thrift_stack, 1)[[1]])[[1]],
+          ttype=ttype
+        )
+      )
       return(cls)
     },
     fill_in_struct = function(cls, fields, gen_init=TRUE) {
@@ -765,7 +767,9 @@ Parser <- R6::R6Class("Parser",
         tspec[[field[[4]]]] <- list(field[[2]], ttype)
       }
       cls$set("public", 'thrift_spec', thrift_spec)
+      cls$thrift_spec <- thrift_spec
       cls$set("public", 'default_spec', default_spec)
+      cls$default_spec <- default_spec
       cls$set("public", 'tspec', tspec)
       if(gen_init) gen_init(cls, thrift_spec, default_spec)
       return(cls)
@@ -775,9 +779,50 @@ Parser <- R6::R6Class("Parser",
       return(private$fill_in_struct(cls, fields, gen_init=gen_init))
     },
     make_service = function(name, funcs, extends) {
-      # TODO
-      print("make_service")
+      if(is.null(extends)) {
+        extends <- R6::R6Class()
+      }
 
+      # print(class(tail(Parser$thrift_stack, 1)[[1]])[[1]])
+      cls <- R6::R6Class(
+        name,
+      #   # inherit=extends,
+        lock_objects=FALSE,
+        public=list(
+      #     module=class(tail(Parser$thrift_stack, 1)[[1]])[[1]],
+        )
+      )
+      thrift_services <- list()
+
+      for(func in funcs) {
+        func_name <- func[[3]]
+        # args payload cls
+        args_name <- sprintf('%s_args', func_name)
+        args_fields <- func[[4]]
+        args_cls <- private$make_struct(args_name, args_fields)
+        cls$set('public', args_name, args_cls)
+        cls[[args_name]] <- args_cls
+        # result payload cls
+        result_name <- sprintf('%s_result', func_name)
+        result_type <- func[[2]]
+        result_throws <- func[[5]]
+        result_oneway <- func[[1]]
+        result_cls <- private$make_struct(result_name, result_throws, gen_init=FALSE)
+        result_cls$set('public', 'oneway', result_oneway)
+        if(result_type != TType$VOID) {
+          result_cls$thrift_spec[['0']] <- private$ttype_spec(result_type, 'success')
+          result_cls$default_spec <- append(list(list('success', NA)), result_cls$default_spec)
+        }
+      #     gen_init(result_cls, result_cls.thrift_spec, result_cls.default_spec)
+        cls$set('public', result_name, result_cls)
+        cls[[result_name]] <- result_cls
+        thrift_services <- append(thrift_services, func_name)
+      }
+      # if extends is not None and hasattr(extends, 'thrift_services'):
+      #     thrift_services.extend(extends.thrift_services)
+      cls$set('public', 'thrift_services', thrift_services)
+      cls$thrift_services <- thrift_services
+      return(cls)
     },
     ttype_spec = function(ttype, name, required=FALSE) {
       if(is.integer(ttype)) return(list(ttype, name, required))
