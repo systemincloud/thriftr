@@ -456,7 +456,7 @@ Parser <- R6::R6Class("Parser",
                           p$get(5), p$get(3)))
         }
 
-        if(!is.null(extends[['thrift_services']]))
+        if(is.null(extends[['thrift_services']]))
           stop(sprintf('Can\'t extends %s, not a service', p$get(5)))
 
       } else extends <- NULL
@@ -809,17 +809,18 @@ Parser <- R6::R6Class("Parser",
         result_oneway <- func[[1]]
         result_cls <- private$make_struct(result_name, result_throws, gen_init=FALSE)
         result_cls$set('public', 'oneway', result_oneway)
-        if(result_type != TType$VOID) {
+        if(typeof(result_type) == 'list' || result_type != TType$VOID) {
           result_cls$thrift_spec[['0']] <- private$ttype_spec(result_type, 'success')
           result_cls$default_spec <- append(list(list('success', NA)), result_cls$default_spec)
         }
-      #     gen_init(result_cls, result_cls.thrift_spec, result_cls.default_spec)
+        gen_init(result_cls, result_cls$thrift_spec, result_cls$default_spec)
         cls$set('public', result_name, result_cls)
         cls[[result_name]] <- result_cls
         thrift_services <- append(thrift_services, func_name)
       }
-      # if extends is not None and hasattr(extends, 'thrift_services'):
-      #     thrift_services.extend(extends.thrift_services)
+      if(!is.null(extends) && !is.null(extends$thrift_services)) {
+         thrift_services <- append(thrift_services, extends$thrift_services)
+      }
       cls$set('public', 'thrift_services', thrift_services)
       cls$thrift_services <- thrift_services
       return(cls)

@@ -37,9 +37,24 @@ test_that("test_include", {
 })
 
 test_that("test_tutorial", {
-#  thrift <- thriftr::load('parser-cases/tutorial.thrift',
-#    include_dirs=list('./parser-cases'))
-# TODO
+  thrift <- thriftr::load('parser-cases/tutorial.thrift', include_dirs=list('./parser-cases'))
+  expect_equal(thrift$INT32CONSTANT, 9853)
+  expect_equal(thrift$MAPCONSTANT[['hello']], 'world')
+  expect_equal(thrift$MAPCONSTANT[['goodnight']], 'moon')
+  expect_equal(thrift$Operation$ADD, 1)
+  expect_equal(thrift$Operation$SUBTRACT, 2)
+  expect_equal(thrift$Operation$MULTIPLY, 3)
+  expect_equal(thrift$Operation$DIVIDE, 4)
+  work <- thrift$Work$new()
+  expect_equal(work$num1, 0)
+  expect_equal(work$num2, NA)
+  expect_equal(work$op, NA)
+  expect_equal(work$comment, NA)
+  expect_equal(thrift$Calculator$thrift_services[[1]], 'ping')
+  expect_equal(thrift$Calculator$thrift_services[[2]], 'add')
+  expect_equal(thrift$Calculator$thrift_services[[3]], 'calculate')
+  expect_equal(thrift$Calculator$thrift_services[[4]], 'zip')
+  expect_equal(thrift$Calculator$thrift_services[[5]], 'getStruct')
 })
 
 test_that("test_e_type_error", {
