@@ -12,4 +12,3 @@ TBufferedTransportFactory
 This class is ...
 }
 \keyword{datasets}
-

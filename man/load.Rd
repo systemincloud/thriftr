@@ -22,4 +22,3 @@ Thrift R6 class instance
 The module loaded and objects inside may only be pickled if module_name
 was provided.
 }
-

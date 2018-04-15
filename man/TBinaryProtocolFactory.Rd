@@ -12,4 +12,3 @@ TBinaryProtocolFactory
 This class is ...
 }
 \keyword{datasets}
-

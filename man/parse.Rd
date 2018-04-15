@@ -30,4 +30,3 @@ Thrift module
 \description{
 Parse a single thrift file to R6 class instance
 }
-

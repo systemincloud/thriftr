@@ -33,4 +33,3 @@ make_client(service, host = "localhost", port = 9090,
 \description{
 Create client side thrift API
 }
-
