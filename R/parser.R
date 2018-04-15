@@ -195,62 +195,68 @@ Lexer <- R6::R6Class("Lexer",
     t_error = function(t) {
       stop(sprintf("Illegal character %s at line %d", t$value[1], t$lineno))
     },
-    t_newline = function(re='\\n+', t) {
+    t_newline = function(re="\\n+", t) {
       t$lexer$lineno <- t$lexer$lineno + nchar(t$value)
       return(NULL)
     },
-    t_ignore_SILLYCOMM = function(re='\\/\\*\\**\\*\\/', t) {
-      t$lexer$lineno <- t$lexer$lineno + lengths(regmatches(t$value, gregexpr("\n", t$value)))
+    t_ignore_SILLYCOMM = function(re="\\/\\*\\**\\*\\/", t) {
+      t$lexer$lineno <- t$lexer$lineno +
+          lengths(regmatches(t$value, gregexpr("\n", t$value)))
       return(NULL)
     },
-    t_ignore_MULTICOMM = function(re='\\/\\*[^*]\\/*([^*/]|[^*]\\/|\\*[^/])*\\**\\*\\/', t) {
-      t$lexer$lineno <- t$lexer$lineno + lengths(regmatches(t$value, gregexpr("\n", t$value)))
+    t_ignore_MULTICOMM = function(
+        re="\\/\\*[^*]\\/*([^*/]|[^*]\\/|\\*[^/])*\\**\\*\\/", t) {
+      t$lexer$lineno <- t$lexer$lineno +
+          lengths(regmatches(t$value, gregexpr("\n", t$value)))
       return(NULL)
     },
-    t_ignore_DOCTEXT = function(re='\\/\\*\\*([^*/]|[^*]\\/|\\*[^/])*\\**\\*\\/', t) {
-      t$lexer$lineno <- t$lexer$lineno + lengths(regmatches(t$value, gregexpr("\n", t$value)))
+    t_ignore_DOCTEXT = function(
+        re="\\/\\*\\*([^*/]|[^*]\\/|\\*[^/])*\\**\\*\\/", t) {
+      t$lexer$lineno <- t$lexer$lineno +
+          lengths(regmatches(t$value, gregexpr("\n", t$value)))
       return(NULL)
     },
-    t_ignore_UNIXCOMMENT = function(re='\\#[^\\n]*', t) {
+    t_ignore_UNIXCOMMENT = function(re="\\#[^\\n]*", t) {
     },
-    t_ignore_COMMENT = function(re='\\/\\/[^\\n]*', t) {
+    t_ignore_COMMENT = function(re="\\/\\/[^\\n]*", t) {
     },
-    t_BOOLCONSTANT = function(re='true|false', t) {
-      t$value <- t$value == 'true'
+    t_BOOLCONSTANT = function(re="true|false", t) {
+      t$value <- t$value == "true"
       return(t)
     },
-    t_DUBCONSTANT = function(re='-?\\d+\\.\\d*(e-?\\d+)?', t) {
+    t_DUBCONSTANT = function(re="-?\\d+\\.\\d*(e-?\\d+)?", t) {
       t$value <- as.numeric(t$value)
       return(t)
     },
-    t_HEXCONSTANT = function(re='0x[0-9A-Fa-f]+', t) {
+    t_HEXCONSTANT = function(re="0x[0-9A-Fa-f]+", t) {
       t$value <- strtoi(t$value)
-      t$type <- 'INTCONSTANT'
+      t$type <- "INTCONSTANT"
       return(t)
     },
-    t_INTCONSTANT = function(re='[+-]?[0-9]+', t) {
+    t_INTCONSTANT = function(re="[+-]?[0-9]+", t) {
       t$value <- strtoi(t$value)
       return(t)
     },
-    t_LITERAL = function(re='(\\"([^\\\n]|(\\.))*?\")|\'([^\\\n]|(\\.))*?\'', t) {
+    t_LITERAL = function(
+        re='(\\"([^\\\n]|(\\.))*?\")|\'([^\\\n]|(\\.))*?\'', t) {
       s <- substr(t$value, 2, nchar(t$value) - 1)
       maps <- new.env(hash = TRUE)
-      maps[['t']]  <- '\t'
-      maps[['r']]  <- '\r'
-      maps[['n']]  <- '\n'
-      maps[['\\']] <- '\\'
-      maps[['\'']] <- '\''
+      maps[["t"]]  <- "\t"
+      maps[["r"]]  <- "\r"
+      maps[["n"]]  <- "\n"
+      maps[["\\"]] <- "\\"
+      maps[["\'"]] <- "\'"
       maps[['"']]  <- '\"'
 
       i <- 1
       length <- nchar(s)
-      val <- ''
-      while(i <= length) {
-        if(substr(s, i, i) == '\\') {
+      val <- ""
+      while (i <= length) {
+        if (substr(s, i, i) == "\\") {
           i <- i + 1
-          if(substr(s, i, i) %in% maps) val <- val + maps[[substr(s, i, i)]]
+          if (substr(s, i, i) %in% maps) val <- val + maps[[substr(s, i, i)]]
           else {
-            msg <- sprintf('Unexcepted escaping characher: %s', substr(s, i, i))
+            msg <- sprintf("Unexcepted escaping characher: %s", substr(s, i, i))
             stop(msg)
           }
         } else val <- paste(val, substr(s, i, i), sep = "")
@@ -260,13 +266,14 @@ Lexer <- R6::R6Class("Lexer",
       t$value <- val
       return(t)
     },
-    t_IDENTIFIER = function(re='[a-zA-Z_](\\.[a-zA-Z_0-9]|[a-zA-Z_0-9])*', t) {
-      if(t$value %in% KEYWORDS) {
+    t_IDENTIFIER = function(re="[a-zA-Z_](\\.[a-zA-Z_0-9]|[a-zA-Z_0-9])*", t) {
+      if (t$value %in% KEYWORDS) {
         t$type <- toupper(t$value)
         return(t)
       }
-      if(t$value %in% THRIFT_RESERVED_KEYWORDS)
-        stop(sprintf('Cannot use reserved language keyword: %s at line %d', t$value, t$lineno))
+      if (t$value %in% THRIFT_RESERVED_KEYWORDS)
+        stop(sprintf("Cannot use reserved language keyword: %s at line %d",
+            t$value, t$lineno))
       return(t)
     }
   )
