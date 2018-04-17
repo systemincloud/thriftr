@@ -60,11 +60,11 @@ test_that("test_tutorial", {
 
 test_that("test_e_type_error", {
   expect_error(thriftr::load("parser-cases/e_type_error_0.thrift"),
-      "Type error for constant int32 at line 1")
+      "\\[ThriftParserError\\]Type error for constant int32 at line 1")
   expect_error(thriftr::load("parser-cases/e_type_error_1.thrift"),
-      "Type error for constant dct at line 1")
+      "\\[ThriftParserError\\]Type error for constant dct at line 1")
   expect_error(thriftr::load("parser-cases/e_type_error_2.thrift"),
-      "Type error for constant jack at line 6")
+      "\\[ThriftParserError\\]Type error for constant jack at line 6")
 })
 
 test_that("test_value_ref", {
@@ -89,7 +89,12 @@ test_that("test_type_ref", {
 })
 
 test_that("test_e_value_ref", {
-  # TODO
+  expect_error(thriftr::load("parser-cases/e_value_ref_0.thrift"),
+      "\\[ThriftParserError\\]Can't find name ref at line 1")
+  expect_error(thriftr::load("parser-cases/e_value_ref_1.thrift"),
+      "\\[ThriftParserError\\]Couldn't find a named value in enum Lang for value 3")
+  expect_error(thriftr::load("parser-cases/e_value_ref_2.thrift"),
+      "\\[ThriftParserError\\]No enum value or constant found named Cookbook")
 })
 
 test_that("test_enums", {

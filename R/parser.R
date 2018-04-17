@@ -344,15 +344,19 @@ Parser <- R6::R6Class("Parser",
     p_definition_unit = function(doc='definition_unit : const
                                                       | ttype', p) {
     },
-    p_const = function(doc='const : CONST field_type IDENTIFIER "=" const_value
-                                  | CONST field_type IDENTIFIER "=" const_value sep', p) {
+    p_const = function(
+        doc='const : CONST field_type IDENTIFIER "=" const_value
+                   | CONST field_type IDENTIFIER "=" const_value sep', p) {
+
       val <- tryCatch({
         private$cast(p$get(3))(p$get(6))
       }, error = function(e) {
+        if (!grepl("\\[AssertionError\\]", e[[1]])) stop(e[[1]])
+        stop("[ThriftParserError]", sprintf("Type error for constant %s at line %d", p$get(4), p$lineno(4)))
       })
 
       if (is.null(val)) {
-        stop(sprintf("Type error for constant %s at line %d", p$get(4), p$lineno(4)))
+        
       }
 
       tail(Parser$thrift_stack, 1)[[1]]$add_public(p$get(4), val)
@@ -399,7 +403,8 @@ Parser <- R6::R6Class("Parser",
         father <- child
         child <- child[[name]]
         if (is.null(child))
-          stop(sprintf("Can\'t find name %s at line %d", p$get(2), p$lineno(2)))
+          stop("[ThriftParserError]",
+              sprintf("Can\'t find name %s at line %d", p$get(2), p$lineno(2)))
       }
 
       father_type <- private$get_ttype(father)
@@ -407,7 +412,8 @@ Parser <- R6::R6Class("Parser",
           (!is.null(father_type) && father_type == TType$I32)) {
         # child is a constant or enum value
         p$set(1, child)
-      } else stop(sprintf("No enum value or constant found named %s", p$get(2)))
+      } else stop("[ThriftParserError]",
+          sprintf("No enum value or constant found named %s", p$get(2)))
     },
     p_ttype = function(doc = "ttype : typedef
                                     | enum
@@ -539,8 +545,8 @@ Parser <- R6::R6Class("Parser",
     p_field_req = function(doc='field_req : REQUIRED
                                           | OPTIONAL
                                           |', p) {
-           if(p$length() == 2) p$set(1, p$get(2) == 'required')
-      else if(p$length() == 1) p$set(1, FALSE)  # default: required=False
+           if (p$length() == 2) p$set(1, p$get(2) == 'required')
+      else if (p$length() == 1) p$set(1, FALSE)  # default: required=False
     },
     p_field_type = function(doc='field_type : ref_type
                                             | definition_type', p) {
@@ -631,101 +637,105 @@ Parser <- R6::R6Class("Parser",
       }
     },
     cast_bool = function(v) {
-      if(typeof(v) != "logical" && typeof(v) != "integer") stop('')
+      if (typeof(v) != "logical" && typeof(v) != "integer") stop("[AssertionError]")
       return(as.logical(v))
     },
     cast_byte = function(v) {
       # TODO
     },
     cast_i16 = function(v) {
-      if(typeof(v) != "integer") stop('')
+      if (typeof(v) != "integer") stop("[AssertionError]")
       return(v)
     },
     cast_i32 = function(v) {
-      if(typeof(v) != "integer") stop('')
+      if (typeof(v) != "integer") stop("[AssertionError]")
       return(v)
     },
     cast_i64 = function(v) {
-      if(typeof(v) != "integer") stop('')
+      if (typeof(v) != "integer") stop("[AssertionError]")
       return(v)
     },
     cast_double = function(v) {
-      if(typeof(v) != "double") stop('')
+      if (typeof(v) != "double") stop("[AssertionError]")
       return(v)
     },
     cast_string = function(v) {
-      if(typeof(v) != "character") stop('')
+      if (typeof(v) != "character") stop("[AssertionError]")
       return(v)
     },
     cast_binary = function(v) {
       # TODO
     },
     cast_list = function(t) {
-      if(t[[1]] != TType$LIST) stop('')
+      if (t[[1]] != TType$LIST) stop("[AssertionError]")
 
-      cast_list_ = function(v) {
-        if(typeof(v) != "list") stop('')
+      cast_list_ <- function(v) {
+        if (typeof(v) != "list") stop("[AssertionError]")
         v <- lapply(v, private$cast(t[[2]]))
         return(v)
       }
       return(cast_list_)
     },
     cast_set = function(t) {
-      if(t[[1]] != TType$SET) stop('')
+      if (t[[1]] != TType$SET) stop("[AssertionError]")
 
-      cast_set_ = function(v) {
-        if(typeof(v) != "list") stop('')
+      cast_set_ <- function(v) {
+        if (typeof(v) != "list") stop("[AssertionError]")
         v <- lapply(v, private$cast(t[[2]]))
         return(v)
       }
       return(cast_set_)
     },
     cast_map = function(t) {
-      if(t[[1]] != TType$MAP) stop('')
+      if (t[[1]] != TType$MAP) stop("[AssertionError]")
 
-      cast_map_ = function(v) {
-        if(typeof(v) != "environment") stop('')
-        for(key in names(v)) {
-          v[[toString(private$cast(t[[2]][[1]])(key))]] <- private$cast(t[[2]][[2]])(v[[key]])
+      cast_map_ <- function(v) {
+        if (typeof(v) != "environment") stop("[AssertionError]")
+        for (key in names(v)) {
+          v[[toString(private$cast(t[[2]][[1]])(key))]] <-
+              private$cast(t[[2]][[2]])(v[[key]])
         }
         return(v)
       }
       return(cast_map_)
     },
     cast_enum = function(t) {
-      if(t[[1]] != TType$I32) stop('')
+      if (t[[1]] != TType$I32) stop("[AssertionError]")
 
-      cast_enum_ = function(v) {
-        if(typeof(v) == "character") v <- strtoi(v)
-        if(typeof(v) != "integer") stop('')
-        if(v %in% lapply(ls(t[[2]]), function(x) t[[2]][[x]]))
+      cast_enum_ <- function(v) {
+        if (typeof(v) == "character") v <- strtoi(v)
+        if (typeof(v) != "integer") stop("[AssertionError]")
+        if (v %in% lapply(ls(t[[2]]), function(x) t[[2]][[x]]))
           return(v)
-        stop(sprintf('Couldn\'t find a named value in enum %s for value %d',
-                     t[[2]]$name, v))
+        stop("[ThriftParserError]",
+            sprintf("Couldn't find a named value in enum %s for value %d",
+                class(t[[2]])[[1]], v))
       }
       return(cast_enum_)
     },
     cast_struct = function(t) {   # struct/exception/union
-      if(t[[1]] != TType$STRUCT) stop('')
+      if (t[[1]] != TType$STRUCT) stop("[AssertionError]")
 
-      cast_struct_ = function(v) {
-        if(class(v)[[1]] == t[[2]]$classname)
+      cast_struct_ <- function(v) {
+        if (class(v)[[1]] == t[[2]]$classname)
           return(v)  # already cast
 
-        if(typeof(v) != 'environment') stop('')
+        if (typeof(v) != "environment") stop("[AssertionError]")
         tspec <- t[[2]]$tspec
 
-        for(key in names(tspec)) { # requirement check
-          if(tspec[[key]][[1]] && !(key %in% names(v))) {
-            stop(sprintf('Field %s was required to create constant for type %s',
-              key, t[[2]]$classname))
+        for (key in names(tspec)) { # requirement check
+          if (tspec[[key]][[1]] && !(key %in% names(v))) {
+            stop("[ThriftParserError]",
+                sprintf("Field %s was required to create constant for type %s",
+                    key, t[[2]]$classname))
           }
         }
 
-        for(key in names(v)) { # cast values
-          if(!(key %in% names(tspec))) {
-            stop(sprintf('No field named %s was found in struct of type %s',
-              key, t[[2]]$classname))
+        for (key in names(v)) { # cast values
+          if (!(key %in% names(tspec))) {
+            stop("[ThriftParserError]",
+                sprintf("No field named %s was found in struct of type %s",
+                    key, t[[2]]$classname))
           }
           v[[key]] <- private$cast(tspec[[key]][[2]])(v[[key]])
         }
@@ -740,28 +750,28 @@ Parser <- R6::R6Class("Parser",
     make_enum = function(name, kvs) {
       cls <- R6::R6Class(
         name,
-        inherit=TPayload,
-        lock_objects=FALSE,
-        public=list(
-          module=tail(Parser$thrift_stack, 1)[[1]]$name,
-          ttype=TType$I32
+        inherit = TPayload,
+        lock_objects = FALSE,
+        public = list(
+          module = tail(Parser$thrift_stack, 1)[[1]]$name,
+          ttype = TType$I32
         )
       )
       cls$ttype <- TType$I32
 
-      values_to_names <- new.env(hash=TRUE)
-      names_to_values <- new.env(hash=TRUE)
+      values_to_names <- new.env(hash = TRUE)
+      names_to_values <- new.env(hash = TRUE)
 
-      if(!is.null(kvs) && length(kvs) > 0) {
+      if (!is.null(kvs) && length(kvs) > 0) {
         val <- kvs[[1]][[2]]
-        if(is.null(val)) val <- -1
+        if (is.null(val)) val <- -1
         i <- 1
-        for(item in kvs) {
-          if(is.null(item[[2]])) kvs[[i]][[2]] <- val + 1
+        for (item in kvs) {
+          if (is.null(item[[2]])) kvs[[i]][[2]] <- val + 1
           val <- kvs[[i]][[2]]
           i <- i + 1
         }
-        for(key_val in kvs) {
+        for (key_val in kvs) {
           key <- key_val[[1]]
           val <- key_val[[2]]
           cls$set("public", key, val)
@@ -769,30 +779,29 @@ Parser <- R6::R6Class("Parser",
           names_to_values[[key]] <- val
         }
       }
-      cls$set("public", 'VALUES_TO_NAMES', values_to_names)
-      cls$set("public", 'NAMES_TO_VALUES', names_to_values)
+      cls$set("public", "VALUES_TO_NAMES", values_to_names)
+      cls$set("public", "NAMES_TO_VALUES", names_to_values)
       return(cls$new())
     },
     make_empty_struct = function(name, ttype=TType$STRUCT) {
       cls <- R6::R6Class(
         name,
-        inherit=TPayload,
-        lock_objects=FALSE,
-        public=list(
-          module=class(tail(Parser$thrift_stack, 1)[[1]])[[1]]#,
-          #ttype=ttype
+        inherit = TPayload,
+        lock_objects = FALSE,
+        public = list(
+          module = class(tail(Parser$thrift_stack, 1)[[1]])[[1]]
         )
       )
-      cls$ttype=ttype
+      cls$ttype <- ttype
       return(cls)
     },
     fill_in_struct = function(cls, fields, gen_init=TRUE) {
-      thrift_spec  <- new.env(hash=TRUE)
+      thrift_spec  <- new.env(hash = TRUE)
       default_spec <- list()
-      tspec        <- new.env(hash=TRUE)
+      tspec        <- new.env(hash = TRUE)
 
-      for(field in fields) {
-        if(as.character(field[[1]]) %in% names(thrift_spec) || field[[4]] %in% names(tspec))
+      for (field in fields) {
+        if (as.character(field[[1]]) %in% names(thrift_spec) || field[[4]] %in% names(tspec))
           stop(sprintf('\'%d:%s\' field identifier/name has already been used',
                        field[[1]], field[[4]]))
         ttype <- field[[3]]
@@ -806,15 +815,15 @@ Parser <- R6::R6Class("Parser",
       cls$default_spec <- default_spec
       cls$set("public", 'tspec', tspec)
       cls$tspec <- tspec
-      if(gen_init) gen_init(cls, thrift_spec, default_spec)
+      if (gen_init) gen_init(cls, thrift_spec, default_spec)
       return(cls)
     },
     make_struct = function(name, fields, ttype=TType$STRUCT, gen_init=TRUE) {
-      cls <- private$make_empty_struct(name, ttype=ttype)
-      return(private$fill_in_struct(cls, fields, gen_init=gen_init))
+      cls <- private$make_empty_struct(name, ttype = ttype)
+      return(private$fill_in_struct(cls, fields, gen_init = gen_init))
     },
     make_service = function(name, funcs, extends) {
-      if(is.null(extends)) {
+      if (is.null(extends)) {
         extends <- R6::R6Class()
       }
 
@@ -822,14 +831,14 @@ Parser <- R6::R6Class("Parser",
       cls <- R6::R6Class(
         name,
       #   # inherit=extends,
-        lock_objects=FALSE,
-        public=list(
+        lock_objects = FALSE,
+        public = list(
       #     module=class(tail(Parser$thrift_stack, 1)[[1]])[[1]],
         )
       )
       thrift_services <- list()
 
-      for(func in funcs) {
+      for (func in funcs) {
         func_name <- func[[3]]
         # args payload cls
         args_name <- sprintf('%s_args', func_name)
@@ -844,7 +853,7 @@ Parser <- R6::R6Class("Parser",
         result_oneway <- func[[1]]
         result_cls <- private$make_struct(result_name, result_throws, gen_init=FALSE)
         result_cls$set('public', 'oneway', result_oneway)
-        if(typeof(result_type) == 'list' || result_type != TType$VOID) {
+        if (typeof(result_type) == 'list' || result_type != TType$VOID) {
           result_cls$thrift_spec[['0']] <- private$ttype_spec(result_type, 'success')
           result_cls$default_spec <- append(list(list('success', NA)), result_cls$default_spec)
         }
@@ -853,7 +862,7 @@ Parser <- R6::R6Class("Parser",
         cls[[result_name]] <- result_cls
         thrift_services <- append(thrift_services, func_name)
       }
-      if(!is.null(extends) && !is.null(extends$thrift_services)) {
+      if (!is.null(extends) && !is.null(extends$thrift_services)) {
          thrift_services <- append(thrift_services, extends$thrift_services)
       }
       cls$set('public', 'thrift_services', thrift_services)
@@ -861,11 +870,11 @@ Parser <- R6::R6Class("Parser",
       return(cls)
     },
     ttype_spec = function(ttype, name, required=FALSE) {
-      if(is.integer(ttype)) return(list(ttype, name, required))
-      else                  return(list(ttype[[1]], name, ttype[[2]], required))
+      if (is.integer(ttype)) return(list(ttype, name, required))
+      else                   return(list(ttype[[1]], name, ttype[[2]], required))
     },
     get_ttype = function(inst, default_ttype=NULL) {
-      if(typeof(inst) == "environment" &&
+      if (typeof(inst) == "environment" &&
           !is.null(inst$ttype)) return(inst$ttype)
       else                      return(default_ttype)
     }
@@ -893,7 +902,7 @@ Parser <- R6::R6Class("Parser",
 #'                     is provided, use it as cache key, else use the `path`
 #'
 #' @return Thrift module
-parse = function(path,
+parse <- function(path,
                  module_name=NA,
                  include_dirs=NA,
                  lexer=NA,
@@ -901,40 +910,40 @@ parse = function(path,
                  enable_cache=TRUE) {
 
   # dead include checking on current stack
-  for(thrift in Parser$thrift_stack) {
-     if(!is.null(thrift$thrift_file) && path == thrift$thrift_file)
+  for (thrift in Parser$thrift_stack) {
+     if (!is.null(thrift$thrift_file) && path == thrift$thrift_file)
        stop(sprintf('Dead including on %s', path))
   }
 
-  cache_key <- if(is.na(module_name)) path else module_name
+  cache_key <- if (is.na(module_name)) path else module_name
 
-  if(enable_cache && cache_key %in% names(Parser$thrift_cache))
+  if (enable_cache && cache_key %in% names(Parser$thrift_cache))
     return(thrift_cache[[cache_key]])
 
-  if(is.na(lexer))  lexer  <- rly::lex(Lexer)
-  if(is.na(parser)) parser <- rly::yacc(Parser)
+  if (is.na(lexer))  lexer  <- rly::lex(Lexer)
+  if (is.na(parser)) parser <- rly::yacc(Parser)
 
-  if(!is.na(include_dirs)) Parser$include_dirs_ <- include_dirs
+  if (!is.na(include_dirs)) Parser$include_dirs_ <- include_dirs
 
-  if(!endsWith(path, '.thrift'))
+  if (!endsWith(path, '.thrift'))
     stop('Path should end with .thrift')
 
-  if(startsWith(path, 'http://') || startsWith(path, 'https://'))
+  if (startsWith(path, 'http://') || startsWith(path, 'https://'))
     data <- url(path, "r+")
   else
     data <- readChar(path, file.info(path)$size)
 
-  if(!is.na(module_name) && !endsWith(module_name, '_thrift'))
+  if (!is.na(module_name) && !endsWith(module_name, '_thrift'))
     stop('ThriftPy can only generate module with \'_thrift\' suffix')
 
-  if(is.na(module_name)) {
+  if (is.na(module_name)) {
     module_name <- strsplit(basename(path), "\\.")[[1]]
   }
 
   thrift <- R6::R6Class(
     module_name,
-    lock_objects=FALSE,
-    public=list(thrift_file=path,
+    lock_objects = FALSE,
+    public = list(thrift_file = path,
       add_public = function(name, obj) {
         self[[name]] <- obj
       }
@@ -945,7 +954,7 @@ parse = function(path,
   parser$parse(data, lexer)
   Parser$thrift_stack <- head(Parser$thrift_stack, -1)
 
-  if(enable_cache) Parser$thrift_cache[[cache_key]] <- thrift
+  if (enable_cache) Parser$thrift_cache[[cache_key]] <- thrift
 
   return(thrift)
 }
