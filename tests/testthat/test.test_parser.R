@@ -157,7 +157,10 @@ test_that("test_structs", {
 })
 
 test_that("test_e_structs", {
-  # TODO
+  expect_error(thriftr::load("parser-cases/e_structs_0.thrift"),
+      "\\[ThriftParserError\\]Field name was required to create constant for type User")
+  expect_error(thriftr::load("parser-cases/e_structs_1.thrift"),
+      "\\[ThriftParserError\\]No field named avatar was found in struct of type User")
 })
 
 test_that("test_service", {
