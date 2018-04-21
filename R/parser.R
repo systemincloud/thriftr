@@ -220,7 +220,7 @@ Lexer <- R6::R6Class("Lexer",
     },
     t_ignore_COMMENT = function(re="\\/\\/[^\\n]*", t) {
     },
-    t_BOOLCONSTANT = function(re="true|false", t) {
+    t_BOOLCONSTANT = function(re="\\btrue\\b|\\bfalse\\b", t) {
       t$value <- t$value == "true"
       return(t)
     },

@@ -205,48 +205,55 @@ test_that("test_service", {
   expect_equal(thrift$EmailService$send_result$default_spec[[2]][[1]], "network_error")
   expect_equal(thrift$EmailService$send_result$default_spec[[2]][[2]], NA)
 })
-#
-# test_that("test_service_extends", {
-#   # TODO
-# })
-#
-# test_that("test_e_service_extends", {
-#   # TODO
-# })
-#
-# test_that("test_e_dead_include", {
-#   # TODO
-# })
-#
-# test_that("test_e_grammer_error_at_eof", {
-#   # TODO
-# })
-#
-test_that("test_e_use_thrift_reserved_keywords", {
-  expect_error(thriftr::load('parser-cases/e_use_thrift_reserved_keywords.thrift'),
-               'Cannot use reserved language keyword: next at line 1')
+
+test_that("test_service_extends", {
+  # thrift <- thriftr::load("parser-cases/service_extends.thrift")
+  # TODO
 })
-#
-# test_that("test_e_duplicate_field_id_or_name", {
-#   # TODO
-# })
-#
-# test_that("test_thrift_meta", {
-#   # TODO
-# })
-#
-# test_that("test_load_fp", {
-#   # TODO
-# })
-#
-# test_that("test_e_load_fp", {
-#   # TODO
-# })
-#
-# test_that("test_recursive_union", {
-#   # TODO
-# })
-#
-# test_that("test_issue_215", {
-#   # TODO
-# })
+
+test_that("test_e_service_extends", {
+  # thrift <- thriftr::load("parser-cases/e_service_extends_0.thrift")
+  # TODO
+})
+
+test_that("test_e_dead_include", {
+  # TODO
+})
+
+test_that("test_e_grammer_error_at_eof", {
+  # TODO
+})
+
+test_that("test_e_use_thrift_reserved_keywords", {
+  expect_error(thriftr::load("parser-cases/e_use_thrift_reserved_keywords.thrift"),
+      "Cannot use reserved language keyword: next at line 1")
+})
+
+test_that("test_e_duplicate_field_id_or_name", {
+  # TODO
+})
+
+test_that("test_thrift_meta", {
+  # thrift <- thriftr::load("parser-cases/tutorial.thrift")
+  # TODO
+})
+
+test_that("test_load_fp", {
+  # thrift <- thriftr::load("parser-cases/shared.thrift")
+  # TODO
+})
+
+test_that("test_e_load_fp", {
+  # thrift <- thriftr::load("parser-cases/tutorial.thrift")
+})
+
+test_that("test_recursive_union", {
+  # thrift <- thriftr::load("parser-cases/recursive_union.thrift")
+  # TODO
+})
+
+test_that("test_issue_215", {
+  thrift <- thriftr::load("parser-cases/issue_215.thrift")
+  expect_equal(thrift$abool, TRUE)
+  expect_equal(thrift$falsevalue, 123)
+})
