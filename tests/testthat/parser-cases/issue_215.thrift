@@ -3,4 +3,4 @@ struct Test {
 }
 
 const bool abool = true
-const i32 falseValue = 123
+const i32 falsevalue = 123
