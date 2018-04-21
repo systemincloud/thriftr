@@ -248,8 +248,30 @@ test_that("test_e_load_fp", {
 })
 
 test_that("test_recursive_union", {
-  # thrift <- thriftr::load("parser-cases/recursive_union.thrift")
-  # TODO
+  thrift <- thriftr::load("parser-cases/recursive_union.thrift")
+  expect_equal(thrift$Dynamic$thrift_spec[["1"]][[1]], thriftr::TType$BOOL)
+  expect_equal(thrift$Dynamic$thrift_spec[["1"]][[2]], "boolean")
+  expect_equal(thrift$Dynamic$thrift_spec[["1"]][[3]], FALSE)
+  expect_equal(thrift$Dynamic$thrift_spec[["2"]][[1]], thriftr::TType$I64)
+  expect_equal(thrift$Dynamic$thrift_spec[["2"]][[2]], "integer")
+  expect_equal(thrift$Dynamic$thrift_spec[["2"]][[3]], FALSE)
+  expect_equal(thrift$Dynamic$thrift_spec[["3"]][[1]], thriftr::TType$DOUBLE)
+  expect_equal(thrift$Dynamic$thrift_spec[["3"]][[2]], "doubl")
+  expect_equal(thrift$Dynamic$thrift_spec[["3"]][[3]], FALSE)
+  expect_equal(thrift$Dynamic$thrift_spec[["4"]][[1]], thriftr::TType$STRING)
+  expect_equal(thrift$Dynamic$thrift_spec[["4"]][[2]], "str")
+  expect_equal(thrift$Dynamic$thrift_spec[["4"]][[3]], FALSE)
+  expect_equal(thrift$Dynamic$thrift_spec[["5"]][[1]], thriftr::TType$LIST)
+  expect_equal(thrift$Dynamic$thrift_spec[["5"]][[2]], "arr")
+  expect_equal(thrift$Dynamic$thrift_spec[["5"]][[3]][[1]], thriftr::TType$STRUCT)
+  expect_equal(thrift$Dynamic$thrift_spec[["5"]][[3]][[2]], thrift$Dynamic)
+  expect_equal(thrift$Dynamic$thrift_spec[["5"]][[4]], FALSE)
+  expect_equal(thrift$Dynamic$thrift_spec[["6"]][[1]], thriftr::TType$MAP)
+  expect_equal(thrift$Dynamic$thrift_spec[["6"]][[2]], "object")
+  expect_equal(thrift$Dynamic$thrift_spec[["6"]][[3]][[1]], thriftr::TType$STRING)
+  expect_equal(thrift$Dynamic$thrift_spec[["6"]][[3]][[2]][[1]], thriftr::TType$STRUCT)
+  expect_equal(thrift$Dynamic$thrift_spec[["6"]][[3]][[2]][[2]], thrift$Dynamic)
+  expect_equal(thrift$Dynamic$thrift_spec[["6"]][[4]], FALSE)
 })
 
 test_that("test_issue_215", {

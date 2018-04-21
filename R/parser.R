@@ -443,25 +443,26 @@ Parser <- R6::R6Class("Parser",
     },
     p_struct = function(doc='struct : seen_struct "{" field_seq "}" ', p) {
       val <- private$fill_in_struct(p$get(2), p$get(4))
-      private$add_thrift_meta('structs', val)
+      private$add_thrift_meta("structs", val)
     },
-    p_seen_struct = function(doc='seen_struct : STRUCT IDENTIFIER ', p) {
+    p_seen_struct = function(doc="seen_struct : STRUCT IDENTIFIER ", p) {
       val <- private$make_empty_struct(p$get(3))
       tail(Parser$thrift_stack, 1)[[1]]$add_public(p$get(3), val)
       p$set(1, val)
     },
     p_union = function(doc='union : seen_union "{" field_seq "}" ', p) {
-      # TODO
-      print("p_union")
+      val <- private$fill_in_struct(p$get(2), p$get(4))
+      private$add_thrift_meta("unions", val)
     },
-    p_seen_union = function(doc='seen_union : UNION IDENTIFIER ', p) {
-      # TODO
-      print("p_seen_union")
+    p_seen_union = function(doc="seen_union : UNION IDENTIFIER ", p) {
+      val <- private$make_empty_struct(p$get(3))
+      tail(Parser$thrift_stack, 1)[[1]]$add_public(p$get(3), val)
+      p$set(1, val)
     },
     p_exception = function(doc='exception : EXCEPTION IDENTIFIER "{" field_seq "}" ', p) {
       val <- private$make_struct(p$get(3), p$get(5))
       tail(Parser$thrift_stack, 1)[[1]]$add_public(p$get(3), val)
-      private$add_thrift_meta('exceptions', val)
+      private$add_thrift_meta("exceptions", val)
     },
     p_service = function(doc='service : SERVICE IDENTIFIER "{" function_seq "}"
                                       | SERVICE IDENTIFIER EXTENDS IDENTIFIER "{" function_seq "}"', p) {
@@ -558,7 +559,7 @@ Parser <- R6::R6Class("Parser",
       for (name in strsplit(p$get(2), "\\.")[[1]]) {
         ref_type <- ref_type[[name]]
         if (is.null(ref_type))
-          stop(sprintf('No type found: %r, at line %d', p$get(2), p$lineno(2)))
+          stop(sprintf('No type found: %s, at line %d', p$get(2), p$lineno(2)))
       }
 
       if (typeof(ref_type) == 'environment' &&
@@ -731,7 +732,8 @@ Parser <- R6::R6Class("Parser",
           }
         }
 
-        for (key in names(v)) { # cast values
+        # cast values
+        for (key in names(v)) {
           if (!(key %in% names(tspec))) {
             stop("[ThriftParserError]",
                 sprintf("No field named %s was found in struct of type %s",
