@@ -39,6 +39,7 @@ load <- function(path, module_name=NA, include_dirs=NA) {
   return(thrift)
 }
 
+
 # lexer
 
 LITERALS <- ":;,=*{}()<>[]"
@@ -304,12 +305,12 @@ Parser <- R6::R6Class("Parser",
     p_header_unit = function(doc='header_unit : include
                                               | namespace', p) {
     },
-    p_include = function(doc='include : INCLUDE LITERAL', p) {
+    p_include = function(doc="include : INCLUDE LITERAL", p) {
       thrift <- tail(Parser$thrift_stack, 1)[[1]]
       if (is.null(thrift$thrift_file))
-        stop('Unexcepted include statement while loading from file like object.')
+        stop("[ThriftParserError]", "Unexcepted include statement while loading from file like object.")
 
-      replace_include_dirs <- if(dirname(thrift$thrift_file) != '.')
+      replace_include_dirs <- if (dirname(thrift$thrift_file) != ".")
                                 append(Parser$include_dirs_, dirname(thrift$thrift_file), 0)
                               else Parser$include_dirs_
       for (include_dir in replace_include_dirs) {
@@ -317,11 +318,11 @@ Parser <- R6::R6Class("Parser",
         if (file.exists(path)) {
           child <- parse(path)
           thrift[[class(child)[[1]]]] <- child
-          private$add_thrift_meta('includes', child)
+          private$add_thrift_meta("includes", child)
           return()
         }
       }
-      stop(sprintf('Couldn\'t include thrift %s in any directories provided', p$get(3)))
+      stop("[ThriftParserError]", sprintf("Couldn't include thrift %s in any directories provided", p$get(3)))
     },
     p_namespace = function(doc='namespace : NAMESPACE namespace_scope IDENTIFIER', p) {
      # namespace is useless in thriftpy
@@ -904,12 +905,13 @@ Parser <- R6::R6Class("Parser",
 #'                     is provided, use it as cache key, else use the `path`
 #'
 #' @return Thrift module
-parse <- function(path,
-                 module_name=NA,
-                 include_dirs=NA,
-                 lexer=NA,
-                 parser=NA,
-                 enable_cache=TRUE) {
+parse <- function(
+    path,
+    module_name=NA,
+    include_dirs=NA,
+    lexer=NA,
+    parser=NA,
+    enable_cache=TRUE) {
 
   # dead include checking on current stack
   for (thrift in Parser$thrift_stack) {

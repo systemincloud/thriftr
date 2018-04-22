@@ -251,15 +251,6 @@ test_that("test_thrift_meta", {
   expect_equal(meta$includes[[1]], thrift$shared)
 })
 
-test_that("test_load_fp", {
-  # thrift <- thriftr::load("parser-cases/shared.thrift")
-  # TODO
-})
-
-test_that("test_e_load_fp", {
-  # thrift <- thriftr::load("parser-cases/tutorial.thrift")
-})
-
 test_that("test_recursive_union", {
   thrift <- thriftr::load("parser-cases/recursive_union.thrift")
   expect_equal(thrift$Dynamic$thrift_spec[["1"]][[1]], thriftr::TType$BOOL)
