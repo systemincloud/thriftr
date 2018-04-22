@@ -207,35 +207,48 @@ test_that("test_service", {
 })
 
 test_that("test_service_extends", {
-  # thrift <- thriftr::load("parser-cases/service_extends.thrift")
-  # TODO
+  thrift <- thriftr::load("parser-cases/service_extends.thrift")
+  expect_equal(thrift$PingService$thrift_services[[1]], "ping")
+  expect_equal(thrift$PingService$thrift_services[[2]], "getStruct")
 })
 
 test_that("test_e_service_extends", {
-  # thrift <- thriftr::load("parser-cases/e_service_extends_0.thrift")
-  # TODO
+  expect_error(thrift <- thriftr::load("parser-cases/e_service_extends_0.thrift"),
+      "\\[ThriftParserError\\]Can't find service shared.NotExistService for service PingService to extend")
 })
 
 test_that("test_e_dead_include", {
-  # TODO
+  expect_error(thriftr::load("parser-cases/e_dead_include_0.thrift"),
+      "\\[ThriftParserError\\]Dead including")
 })
 
 test_that("test_e_grammer_error_at_eof", {
-  # TODO
+  expect_error(thriftr::load("parser-cases/e_grammer_error_at_eof.thrift"),
+      "\\[ThriftGrammerError\\]Grammar error at EOF")
 })
 
 test_that("test_e_use_thrift_reserved_keywords", {
   expect_error(thriftr::load("parser-cases/e_use_thrift_reserved_keywords.thrift"),
-      "Cannot use reserved language keyword: next at line 1")
+      "\\[ThriftLexerError\\]Cannot use reserved language keyword: next at line 1")
 })
 
 test_that("test_e_duplicate_field_id_or_name", {
-  # TODO
+  expect_error(thriftr::load("parser-cases/e_duplicate_field_id.thrift"),
+      "\\[ThriftGrammerError\\]'1:efg' field identifier/name has already been used")
+  expect_error(thriftr::load("parser-cases/e_duplicate_field_name.thrift"),
+      "\\[ThriftGrammerError\\]\\'2:abc\\' field identifier/name has already been used")
 })
 
 test_that("test_thrift_meta", {
-  # thrift <- thriftr::load("parser-cases/tutorial.thrift")
-  # TODO
+  thrift <- thriftr::load("parser-cases/tutorial.thrift")
+  meta <- thrift$thrift_meta
+  expect_equal(meta$consts[[1]], thrift$INT32CONSTANT)
+  expect_equal(meta$consts[[2]], thrift$MAPCONSTANT)
+  expect_equal(meta$enums[[1]], thrift$Operation)
+  expect_equal(meta$structs[[1]], thrift$Work)
+  expect_equal(meta$exceptions[[1]], thrift$InvalidOperation)
+  expect_equal(meta$services[[1]], thrift$Calculator)
+  expect_equal(meta$includes[[1]], thrift$shared)
 })
 
 test_that("test_load_fp", {

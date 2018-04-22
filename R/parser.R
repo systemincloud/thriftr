@@ -257,7 +257,7 @@ Lexer <- R6::R6Class("Lexer",
           if (substr(s, i, i) %in% maps) val <- val + maps[[substr(s, i, i)]]
           else {
             msg <- sprintf("Unexcepted escaping characher: %s", substr(s, i, i))
-            stop(msg)
+            stop("[ThriftLexerError]", msg)
           }
         } else val <- paste(val, substr(s, i, i), sep = "")
         i <- i + 1
@@ -272,7 +272,7 @@ Lexer <- R6::R6Class("Lexer",
         return(t)
       }
       if (t$value %in% THRIFT_RESERVED_KEYWORDS)
-        stop(sprintf("Cannot use reserved language keyword: %s at line %d",
+        stop("[ThriftLexerError]", sprintf("Cannot use reserved language keyword: %s at line %d",
             t$value, t$lineno))
       return(t)
     }
@@ -285,13 +285,13 @@ Lexer <- R6::R6Class("Lexer",
 Parser <- R6::R6Class("Parser",
   public = list(
     thrift_stack = list(),
-    include_dirs_ = list('.'),
+    include_dirs_ = list("."),
     thrift_cache = new.env(hash = TRUE),
 
     tokens = TOKENS,
     p_error = function(p) {
-      if (is.null(p)) stop("Grammar error at EOF")
-      else stop(sprintf("Grammar error %s at '%s'", p$value, p$lineno))
+      if (is.null(p)) stop("[ThriftGrammerError]", "Grammar error at EOF")
+      else stop("[ThriftGrammerError]", sprintf("Grammar error %s at '%s'", p$value, p$lineno))
     },
     p_start = function(doc="start : header definition", p) {
     },
@@ -473,7 +473,7 @@ Parser <- R6::R6Class("Parser",
         for (name in strsplit(p$get(5), "\\.")[[1]]) {
           extends <- extends[[name]]
           if (is.null(extends))
-            stop(sprintf('Can\'t find service %s for service %s to extend',
+            stop("[ThriftParserError]", sprintf("Can't find service %s for service %s to extend",
                           p$get(5), p$get(3)))
         }
 
@@ -804,7 +804,7 @@ Parser <- R6::R6Class("Parser",
 
       for (field in fields) {
         if (as.character(field[[1]]) %in% names(thrift_spec) || field[[4]] %in% names(tspec))
-          stop(sprintf('\'%d:%s\' field identifier/name has already been used',
+          stop("[ThriftGrammerError]", sprintf("'%d:%s\' field identifier/name has already been used",
                        field[[1]], field[[4]]))
         ttype <- field[[3]]
         thrift_spec[[as.character(field[[1]])]] <- private$ttype_spec(ttype, field[[4]], field[[2]])
@@ -914,29 +914,29 @@ parse <- function(path,
   # dead include checking on current stack
   for (thrift in Parser$thrift_stack) {
      if (!is.null(thrift$thrift_file) && path == thrift$thrift_file)
-       stop(sprintf('Dead including on %s', path))
+       stop("[ThriftParserError]", sprintf("Dead including on %s", path))
   }
 
   cache_key <- if (is.na(module_name)) path else module_name
 
   if (enable_cache && cache_key %in% names(Parser$thrift_cache))
-    return(thrift_cache[[cache_key]])
+    return(Parser$thrift_cache[[cache_key]])
 
   if (is.na(lexer))  lexer  <- rly::lex(Lexer)
   if (is.na(parser)) parser <- rly::yacc(Parser)
 
   if (!is.na(include_dirs)) Parser$include_dirs_ <- include_dirs
 
-  if (!endsWith(path, '.thrift'))
-    stop('Path should end with .thrift')
+  if (!endsWith(path, ".thrift"))
+    stop("[ThriftParserError]", "Path should end with .thrift")
 
-  if (startsWith(path, 'http://') || startsWith(path, 'https://'))
+  if (startsWith(path, "http://") || startsWith(path, "https://"))
     data <- url(path, "r+")
   else
     data <- readChar(path, file.info(path)$size)
 
-  if (!is.na(module_name) && !endsWith(module_name, '_thrift'))
-    stop('ThriftPy can only generate module with \'_thrift\' suffix')
+  if (!is.na(module_name) && !endsWith(module_name, "_thrift"))
+    stop("[ThriftParserError]", "ThriftPy can only generate module with '_thrift' suffix")
 
   if (is.na(module_name)) {
     module_name <- strsplit(basename(path), "\\.")[[1]]
