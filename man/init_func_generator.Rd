@@ -6,6 +6,14 @@
 \usage{
 init_func_generator(cls, spec)
 }
+\arguments{
+\item{cls}{R6 class}
+
+\item{spec}{specification}
+}
+\value{
+constructor function
+}
 \description{
 Generate `initialize` function based on TPayload$default_spec
 }

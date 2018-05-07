@@ -20,9 +20,55 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+#' parse_spec
+#'
+#' Generate `initialize` function based on TPayload$default_spec
+#'
+#' @param ttype type
+#' @param spec specification
+#'
+#' @return string representation
+#'
+#' @export
+parse_spec = function(ttype, spec = NA) {
+  name_map <- as.list(TType)
+  name_map_tmp <- name_map 
+  name_map <- names(name_map)
+  names(name_map) <- unlist(name_map_tmp, use.names=FALSE)
+
+  type_ = function(s) {
+    if (is.list(s)) {
+      return(parse_spec(s[[1]], s[[2]]))
+    } else {
+      return(name_map[[as.character(s)]])
+    }
+  }
+
+  if (is.na(spec)) {
+    return(name_map[[as.character(ttype)]])
+  }
+        
+  if (ttype == TType$STRUCT) {
+    return(spec$classname)
+  }
+
+  if (ttype %in% c(TType$LIST, TType$SET)) {
+    return(sprintf("%s<%s>", name_map[[as.character(ttype)]], type_(spec)))
+  }
+
+  if (ttype == TType$MAP) {
+    return(sprintf("MAP<%s, %s>", type_(spec[[1]]), type_(spec[[2]])))
+  }
+}
+
 #' init_func_generator
 #'
 #' Generate `initialize` function based on TPayload$default_spec
+#'
+#' @param cls R6 class
+#' @param spec specification
+#'
+#' @return constructor function
 #'
 #' @export
 init_func_generator = function(cls, spec) {

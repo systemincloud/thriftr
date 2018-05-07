@@ -883,7 +883,9 @@ Parser <- R6::R6Class("Parser",
     }
   )
 )
-
+Parser$thrift_stack = list()
+Parser$include_dirs_ = list(".")
+Parser$thrift_cache = new.env(hash = TRUE)
 
 
 #' Parse a single thrift file to R6 class instance

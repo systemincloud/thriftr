@@ -1,6 +1,7 @@
 ^\.project$
 ^\.settings$
 ^\.gitignore$
+^\.thrift.code-workspace$
 ^pom.xml$
 ^resources
 ^target$
