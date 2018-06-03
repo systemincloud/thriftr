@@ -130,7 +130,15 @@ gen_init = function(cls, thrift_spec=NULL, default_spec=NULL) {
   return(cls)
 }
 
-
+#' TPayload ...
+#'
+#' This class is ...
+#'
+#' @docType class
+#' @importFrom R6 R6Class
+#' @format An \code{\link{R6Class}} generator object
+#'
+#' @export
 TPayload <- R6Class("TPayload",
   public = list(
     add_public = function(name, obj) {

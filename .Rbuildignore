@@ -8,5 +8,6 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^\.pydevproject$
+^\.vscode$
 ^README.md$
 ^NEWS.md$

@@ -3,10 +3,10 @@ Type: Package
 Title: ${project.name}
 Version: ${project.version}
 Date: ${date}
-Authors@R: c(person("Marek", "Jagielski", 
-                    role = c("aut", "cre", "cph"), 
+Authors@R: c(person("Marek", "Jagielski",
+                    role = c("aut", "cre", "cph"),
                     email = "marek.jagielski@gmail.com"),
-             person("Lixin", "Yu", 
+             person("Lixin", "Yu",
                     role = c("aut", "cph")))
 Author: Marek Jagielski [aut, cre, cph], Lixin Yu [aut, cph]
 Maintainer: Marek Jagielski <marek.jagielski@gmail.com>
@@ -18,10 +18,12 @@ Suggests: testthat
 Imports:
     R6,
     rly
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1
 Collate:
     'thrift.R'
     'transport.R'
     'protocol.R'
     'rpc.R'
     'parser.R'
+    'protocol_binary.R'
+    'utils.R'
