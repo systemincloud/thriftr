@@ -172,3 +172,28 @@ TException <- R6Class("TException",
   public = list(
   )
 )
+
+#' @export
+to_proper_struct <- function(thrift_spec_list, default_spec) {
+  thrift_spec <- new.env(hash = TRUE)
+  for (input in thrift_spec_list) {
+    thrift_spec[[input[[1]]]] <- input[[2]]
+  }
+  
+  TItem <- R6::R6Class(
+    "TItem",
+    inherit = thriftr::TPayload,
+    lock_objects = FALSE,
+    public = list(
+    )
+  )
+  
+  TItem$set("public", 'thrift_spec', thrift_spec)
+  TItem$set("public", 'default_spec', default_spec)
+
+  gen_init(
+    TItem,
+    thrift_spec, 
+    default_spec
+ )
+}
