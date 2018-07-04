@@ -57,31 +57,30 @@ unpack_double <- function(buf) {
 
 write_message_begin = function(outbuf, name, ttype, seqid, strict = TRUE) {
   if (strict) {
-    outbuf <- c(outbuf, pack_i32(bitwOr(VERSION_1, ttype)))
-    outbuf <- c(outbuf, pack_string(name))
+    outbuf$write(c(pack_i32(bitwOr(VERSION_1, ttype))))
+    outbuf$write(pack_string(name))
   } else {
-    outbuf <- c(outbuf, pack_string(name))
-    outbuf <- c(outbuf, pack_i8(ttype))
+    outbuf$write(pack_string(name))
+    outbuf$write(pack_i8(ttype))
   }
-  outbuf <- c(outbuf, pack_i32(seqid))
-  return(outbuf)
+  outbuf$write(pack_i32(seqid))
 }
 
 write_field_begin = function(outbuf, ttype, fid) {
-  c(outbuf, pack_i8(ttype), pack_i16(fid))
+  outbuf$write(c(pack_i8(ttype), pack_i16(fid)))
 }
 
 
 write_field_stop = function(outbuf) {
-  c(outbuf, pack_i8(TType$STOP))
+  outbuf$write(pack_i8(TType$STOP))
 }
 
 write_list_begin = function(outbuf, etype, size) {
-  c(outbuf, pack_i8(etype), pack_i32(size))
+  outbuf$write(c(pack_i8(etype), pack_i32(size)))
 }
 
 write_map_begin = function(outbuf, ktype, vtype, size) {
-  c(outbuf, pack_i8(ktype), pack_i8(vtype), pack_i32(size))
+  outbuf$write(c(pack_i8(ktype), pack_i8(vtype), pack_i32(size)))
 }
 
 
@@ -89,22 +88,22 @@ write_map_begin = function(outbuf, ktype, vtype, size) {
 binary_write_val <- function(outbuf, ttype, val, spec = NA) {
   if (ttype == TType$BOOL) {
     if (val) {
-      return(c(outbuf, pack_i8(1)))
+      outbuf$write(pack_i8(1))
     } else {
-      return(c(outbuf, pack_i8(0)))
+      outbuf$write(pack_i8(0))
     }
   } else if (ttype == TType$BYTE) {
-    return(c(outbuf, pack_i8(val)))
+    outbuf$write(pack_i8(val))
   } else if (ttype == TType$I16) {
-    return(c(outbuf, pack_i16(val)))
+    outbuf$write(pack_i16(val))
   } else if (ttype == TType$I32) {
-    return(c(outbuf, pack_i32(val)))
+    outbuf$write(pack_i32(val))
   } else if (ttype == TType$I64) {
-    return(c(outbuf, pack_i64(val)))
+    outbuf$write(pack_i64(val))
   } else if (ttype == TType$DOUBLE) {
-    return(c(outbuf, pack_double(val)))
+    outbuf$write(pack_double(val))
   } else if (ttype == TType$STRING) {
-    return(c(outbuf, pack_string(val)))
+    outbuf$write(pack_string(val))
   } else if (ttype == TType$SET || ttype == TType$LIST) {
     if (length(spec) == 2) {
       e_type <- spec[[1]]
@@ -115,11 +114,10 @@ binary_write_val <- function(outbuf, ttype, val, spec = NA) {
     }
 
     val_len <- length(val)
-    outbuf <- write_list_begin(outbuf, e_type, val_len)
+    write_list_begin(outbuf, e_type, val_len)
     for (e_val in val) {
-      outbuf <- binary_write_val(outbuf, e_type, e_val, t_spec)
+      binary_write_val(outbuf, e_type, e_val, t_spec)
     }
-    return(outbuf)
   } else if (ttype == TType$MAP) {
     if (typeof(spec[[1]]) == "integer") {
       k_type <- spec[[1]]
@@ -137,10 +135,10 @@ binary_write_val <- function(outbuf, ttype, val, spec = NA) {
       k_spec = spec[[2]][[2]]
     }
 
-    outbuf <- write_map_begin(outbuf, k_type, v_type, length(val))
+    write_map_begin(outbuf, k_type, v_type, length(val))
     for (k in names(val)) {
-      outbuf <- binary_write_val(outbuf, k_type, k, k_spec)
-      outbuf <- binary_write_val(outbuf, v_type, val[[k]], v_spec)
+      binary_write_val(outbuf, k_type, k, k_spec)
+      binary_write_val(outbuf, v_type, val[[k]], v_spec)
     }
     return(outbuf)
   } else if (ttype == TType$STRUCT) {
@@ -161,97 +159,82 @@ binary_write_val <- function(outbuf, ttype, val, spec = NA) {
       v <- val[[f_name]]
       if (is.na(v)) next
 
-      outbuf <- write_field_begin(outbuf, f_type, fid)
-      outbuf <- binary_write_val(outbuf, f_type, v, f_container_spec)
+      write_field_begin(outbuf, f_type, fid)
+      binary_write_val(outbuf, f_type, v, f_container_spec)
     }
   
-    outbuf <- write_field_stop(outbuf)
-    return(outbuf)
+    write_field_stop(outbuf)
   }
 }
 
 read_message_begin <- function(inbuf, strict = TRUE) {
-  sz <- unpack_i32(head(inbuf, 4))
-  inbuf <- tail(inbuf, -4)
+  sz <- unpack_i32(inbuf$read(4))
   if (sz < 0) {
     version <- bitwAnd(sz, VERSION_MASK)
     if (version != VERSION_1) {
       stop(sprintf("[TProtocolException][BAD_VERSION] Bad version in read_message_begin: %d'", sz))
     }
             
-    name_sz <- unpack_i32(head(inbuf, 4))
-    inbuf <- tail(inbuf, -4)
-    name <- rawToChar(head(inbuf, name_sz))
-    inbuf <- tail(inbuf, name_sz)
+    name_sz <- unpack_i32(inbuf$read(4))
+    name <- rawToChar(inbuf$read(name_sz))
 
     type_ <- bitwAnd(sz, TYPE_MASK)
   } else {
     if (strict) {
       stop("[TProtocolException][BAD_VERSION] No protocol version header")
     }
-    name <- rawToChar(head(inbuf, sz))
-    inbuf <- tail(inbuf, -sz)
-    type_ <- unpack_i8(head(inbuf, 1))
-    inbuf <- tail(inbuf, -1)
+    name <- rawToChar(inbuf$read(sz))
+    type_ <- unpack_i8(inbuf$read(1))
   }
 
-  seqid <- unpack_i32(head(inbuf, 4))
-  inbuf <- tail(inbuf, -4)
+  seqid <- unpack_i32(inbuf$read(4))
 
-  return(list(name, type_, seqid, inbuf))
+  return(list(name, type_, seqid))
 }
 
 read_field_begin <- function(inbuf) {
-  f_type <- unpack_i8(head(inbuf, 1))
-  inbuf <- tail(inbuf, -1)
+  f_type <- unpack_i8(inbuf$read(1))
   if (f_type == TType$STOP) return(list(f_type, 0, inbuf))
-  return(list(f_type, unpack_i16(head(inbuf, 2)), tail(inbuf, -2)))
+  return(list(f_type, unpack_i16(inbuf$read(2))))
 }
 
 read_list_begin <- function(inbuf) {
-  e_type <- unpack_i8(head(inbuf, 1))
-  inbuf <- tail(inbuf, -1)
-  sz <- unpack_i32(head(inbuf, 4))
-  inbuf <- tail(inbuf, -4)
-  return(list(e_type, sz, inbuf))
+  e_type <- unpack_i8(inbuf$read(1))
+  sz <- unpack_i32(inbuf$read(4))
+  return(list(e_type, sz))
 }
 
 read_map_begin = function(inbuf) {
-  k_type <- unpack_i8(head(inbuf, 1))
-  inbuf <- tail(inbuf, -1)
-  v_type <- unpack_i8(head(inbuf, 1))
-  inbuf <- tail(inbuf, -1)
-  sz <- unpack_i32(head(inbuf, 4))
-  inbuf <- tail(inbuf, -4)
-  return(list(k_type, v_type, sz, inbuf))
+  k_type <- unpack_i8(inbuf$read(1))
+  v_type <- unpack_i8(inbuf$read(1))
+  sz <- unpack_i32(inbuf$read(4))
+  return(list(k_type, v_type, sz))
 }
 
 #' @export
 binary_read_val <- function(inbuf, ttype, spec = NA, decode_response = TRUE) {
   if (ttype == TType$BOOL) {
-    return(list(as.logical(unpack_i8(inbuf), tail(inbuf, -1))))
+    return(as.logical(unpack_i8(inbuf$read(1))))
   } else if (ttype == TType$BYTE) {
-    return(list(unpack_i8(inbuf), tail(inbuf, -1)))
+    return(unpack_i8(inbuf$read(1)))
   } else if (ttype == TType$I16) {
-    return(list(unpack_i16(inbuf), tail(inbuf, -2)))
+    return(unpack_i16(inbuf$read(2)))
   } else if (ttype == TType$I32) {
-    return(list(unpack_i32(inbuf), tail(inbuf, -4)))
+    return(unpack_i32(inbuf$read(4)))
   } else if (ttype == TType$I64) {
-    return(list(unpack_i64(inbuf), tail(inbuf, -8)))
+    return(unpack_i64(inbuf$read(8)))
   } else if (ttype == TType$DOUBLE) {
-    return(list(unpack_double(inbuf), tail(inbuf, -8)))
+    return(unpack_double(inbuf$read(8)))
   } else if (ttype == TType$STRING) {
-    sz = unpack_i32(inbuf)
-    inbuf <- tail(inbuf, -4)
-    byte_payload = head(inbuf, sz)
-    inbuf <- tail(inbuf, -sz)
+    sz = unpack_i32(inbuf$read(4))
+    byte_payload = inbuf$read(sz)
 
     # Since we cannot tell if we're getting STRING or BINARY
     # if not asked not to decode, try both
     if (decode_response) {
-      return(list(rawToChar(byte_payload), inbuf))
+      return(rawToChar(byte_payload))
       # TODO
-    } else return(list(byte_payload, inbuf))
+    } else return(byte_payload)
   } else if (ttype == TType$SET || ttype == TType$LIST) {
     if (length(spec) == 2) {
       v_type <- spec[[1]]
@@ -262,24 +245,21 @@ binary_read_val <- function(inbuf, ttype, spec = NA, decode_response = TRUE) {
     }
 
     result <- list()
-    r_type_sz_inbuf <- read_list_begin(inbuf)
-    r_type <- r_type_sz_inbuf[[1]]
-    sz <- r_type_sz_inbuf[[2]]
-    inbuf <- r_type_sz_inbuf[[3]]
+    r_type_sz <- read_list_begin(inbuf)
+    r_type <- r_type_sz[[1]]
+    sz <- r_type_sz[[2]]
     # the v_type is useless here since we already get it from spec
     if (r_type != v_type) {
       for (i in 1:sz) {
-        inbuf <- skip(inbuf, r_type)
+        skip(inbuf, r_type)
       }
       return(list())
     }
 
     for(i in 1:sz) {
-      obj_inbuf <- binary_read_val(inbuf, v_type, v_spec, decode_response)
-      inbuf <- obj_inbuf[[2]]
-      result[[length(result) + 1]] <- obj_inbuf[[1]]
+      result[[length(result) + 1]] <- binary_read_val(inbuf, v_type, v_spec, decode_response)
     }
-    return(list(result, inbuf))
+    return(result)
   } else if (ttype == TType$MAP) {
     if (typeof(spec[[1]]) == "integer") {
       k_type <- spec[[1]]
@@ -298,15 +278,14 @@ binary_read_val <- function(inbuf, ttype, spec = NA, decode_response = TRUE) {
     }
 
     result <- new.env(hash=TRUE)
-    sk_type_sv_type_sz_inbuf <- read_map_begin(inbuf)
-    sk_type <- sk_type_sv_type_sz_inbuf[[1]]
-    sv_type <- sk_type_sv_type_sz_inbuf[[2]]
-    sz <- sk_type_sv_type_sz_inbuf[[3]]
-    inbuf <- sk_type_sv_type_sz_inbuf[[4]]
+    sk_type_sv_type_sz <- read_map_begin(inbuf)
+    sk_type <- sk_type_sv_type_sz[[1]]
+    sv_type <- sk_type_sv_type_sz[[2]]
+    sz <- sk_type_sv_type_sz[[3]]
     if (sk_type != k_type || sv_type != v_type) {
       for (i in 1:sz) {
-        inbuf <- skip(inbuf, sk_type)
-        inbuf <- skip(inbuf, sv_type)
+        skip(inbuf, sk_type)
+        skip(inbuf, sv_type)
         return(new.env(hash=TRUE))
       }  
     }
@@ -320,22 +299,21 @@ binary_read_val <- function(inbuf, ttype, spec = NA, decode_response = TRUE) {
     return(result)
   } else if (ttype == TType$STRUCT) {
     obj <- spec()
-    inbuf <- read_struct(inbuf, obj, decode_response)
-    return(list(obj, inbuf))
+    read_struct(inbuf, obj, decode_response)
+    return(obj)
   }
 }
 
 read_struct <- function(inbuf, obj, decode_response=TRUE) {
   while (TRUE) {
-    f_type_fid_inbuf <- read_field_begin(inbuf)
-    f_type <- f_type_fid_inbuf[[1]]
-    fid <- f_type_fid_inbuf[[2]]
-    inbuf <- f_type_fid_inbuf[[3]]
+    f_type_fid <- read_field_begin(inbuf)
+    f_type <- f_type_fid[[1]]
+    fid <- f_type_fid[[2]]
 
     if (f_type == TType$STOP) break
 
     if (!(fid %in% names(obj$thrift_spec))) {
-      inbuf <- skip(inbuf, f_type)
+      skip(inbuf, f_type)
       next
     }
 
@@ -355,57 +333,48 @@ read_struct <- function(inbuf, obj, decode_response=TRUE) {
     # it really should equal here. but since we already wasted
     # space storing the duplicate info, let's check it.
     if (f_type != sf_type) {
-      inbuf <- skip(inbuf, f_type)
+      skip(inbuf, f_type)
       next
     }
 
-    val_inbuf <- binary_read_val(inbuf, f_type, f_container_spec, decode_response)
-    val <- val_inbuf[[1]]
-    inbuf <- val_inbuf[[2]]
+    val <- binary_read_val(inbuf, f_type, f_container_spec, decode_response)
     obj[[f_name]] <- val
   }
-  return(inbuf)
 }
 
 skip <- function(inbuf, ftype) {
   if (ftype == TType$BOOL || ftype == TType$BYTE)
-    return(tail(inbuf, -1))
+    inbuf$read(1)
   else if (ftype == TType$I16)
-    return(tail(inbuf, -2))
+    inbuf$read(2)
   else if (ftype == TType$I32)
-    return(tail(inbuf, -4))
+    inbuf$read(4)
   else if (ftype == TType$I64)
-    return(tail(inbuf, -8))
+    inbuf$read(8)
   else if (ftype == TType$DOUBLE)
-    return(tail(inbuf, -8))
+    inbuf$read(8)
   else if (ftype == TType$STRING) {
-    sz <- unpack_i32(head(inbuf, 4))
-    inbuf <- tail(inbuf, -4)
-    return(tail(inbuf, -sz))
+    inbuf$read(unpack_i32(inbuf$read(4)))
   }
   else if (ftype == TType$SET || ftype == TType$LIST) {
-    v_type_sz_inbuf <- read_list_begin(inbuf)
-    inbuf <- v_type_sz_inbuf[[3]]
+    v_type_sz <- read_list_begin(inbuf)
     for (i in 1:v_type_sz[[2]]) {
-      inbuf <- skip(inbuf, v_type_sz[[1]])
+      skip(inbuf, v_type_sz[[1]])
     }
-    return(inbuf)
   }
   else if (ftype == TType$MAP) {
     k_type_v_type_sz <- read_map_begin(inbuf)
     for (i in 1:k_type_v_type_sz[[3]]) {
-      inbuf <- skip(inbuf, k_type_v_type_sz[[1]])
-      inbuf <- skip(inbuf, k_type_v_type_sz[[2]])
+      skip(inbuf, k_type_v_type_sz[[1]])
+      skip(inbuf, k_type_v_type_sz[[2]])
     }
-    return(inbuf)
   }
   else if (ftype == TType$STRUCT) {
     while (TRUE) {
-      f_type_fid_inbuf <- read_field_begin(inbuf)
-      if (f_type_fid_inbuf[[1]] == TType.STOP) break
-      inbuf <- skip(f_type_fid_inbuf[[3]], f_type_fid_inbuf[[1]])
+      f_type_fid <- read_field_begin(inbuf)
+      if (f_type_fid[[1]] == TType.STOP) break
+      skip(inbuf, f_type_fid[[1]])
     }
-    return(inbuf)
   }
 }
 
