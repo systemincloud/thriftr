@@ -128,11 +128,11 @@ binary_write_val <- function(outbuf, ttype, val, spec = NA) {
     }
 
     if (typeof(spec[[2]]) == "integer") {
-      k_type <- spec[[2]]
-      k_spec <- NA
+      v_type <- spec[[2]]
+      v_spec <- NA
     } else {
-      k_type <- spec[[2]][[1]]
-      k_spec = spec[[2]][[2]]
+      v_type <- spec[[2]][[1]]
+      v_spec = spec[[2]][[2]]
     }
 
     write_map_begin(outbuf, k_type, v_type, length(val))
@@ -140,7 +140,6 @@ binary_write_val <- function(outbuf, ttype, val, spec = NA) {
       binary_write_val(outbuf, k_type, k, k_spec)
       binary_write_val(outbuf, v_type, val[[k]], v_spec)
     }
-    return(outbuf)
   } else if (ttype == TType$STRUCT) {
     for (fid in names(val$thrift_spec)) {
       f_spec <- val$thrift_spec[[fid]]
@@ -270,11 +269,11 @@ binary_read_val <- function(inbuf, ttype, spec = NA, decode_response = TRUE) {
     }
 
     if (typeof(spec[[2]]) == "integer") {
-      k_type <- spec[[2]]
-      k_spec <- NA
+      v_type <- spec[[2]]
+      v_spec <- NA
     } else {
-      k_type <- spec[[2]][[1]]
-      k_spec <- spec[[2]][[2]]
+      v_type <- spec[[2]][[1]]
+      v_spec <- spec[[2]][[2]]
     }
 
     result <- new.env(hash=TRUE)
@@ -291,14 +290,14 @@ binary_read_val <- function(inbuf, ttype, spec = NA, decode_response = TRUE) {
     }
 
     for (i in 1:sz) {
-      k_val <- read_val(inbuf, k_type, k_spec, decode_response)
-      v_val <- read_val(inbuf, v_type, v_spec, decode_response)
-      result[[k_val]] <- v_val
+      k_val <- binary_read_val(inbuf, k_type, k_spec, decode_response)
+      v_val <- binary_read_val(inbuf, v_type, v_spec, decode_response)
+      result[[as.character(k_val)]] <- v_val
     }
 
     return(result)
   } else if (ttype == TType$STRUCT) {
-    obj <- spec()
+    obj <- spec$new()
     read_struct(inbuf, obj, decode_response)
     return(obj)
   }
