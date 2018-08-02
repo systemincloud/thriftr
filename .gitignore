@@ -8,4 +8,7 @@ src/*.so
 src/*.dll
 **/parser.out
 .pydevproject
-
+thriftr.code-workspace
+.vscode/
+.idea/
+*.iml
