@@ -4,7 +4,7 @@ calc_thrift <- thriftr::load("calc/calc.thrift", module_name="calc_thrift")
 
 cal <- thriftr::make_client(
     calc_thrift$Calculator,
-    '127.0.0.1',
+    "127.0.0.1",
     6000)
 
 a <- cal$mult(5, 2)
