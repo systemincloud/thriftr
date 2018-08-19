@@ -422,14 +422,29 @@ TBinaryProtocol <- R6Class("TBinaryProtocol",
   )
 )
 
-# class TBinaryProtocolFactory(object):
-#     def __init__(self, strict_read=True, strict_write=True,
-#                  decode_response=True):
-#         self.strict_read = strict_read
-#         self.strict_write = strict_write
-#         self.decode_response = decode_response
-
-#     def get_protocol(self, trans):
-#         return TBinaryProtocol(trans,
-#                                self.strict_read, self.strict_write,
-#                                self.decode_response)
+#' TBinaryProtocolFactory ...
+#'
+#' This class is ...
+#'
+#' @docType class
+#' @importFrom R6 R6Class
+#' @format An \code{\link{R6Class}} generator object
+#'
+#' @export
+TBinaryProtocolFactory <- R6Class("TBinaryProtocolFactory",
+  public = list(
+    strict_read = NA,
+    strict_write = NA,
+    decode_response = NA,
+    initialize = function(strict_read=TRUE, strict_write=TRUE, decode_response=TRUE) {
+      self$strict_read <- strict_read
+      self$strict_write <- strict_write
+      self$decode_response <- decode_response
+    },
+    get_protocol = function(trans) {
+      return(TBinaryProtocol$new(trans, self$strict_read,
+        self$strict_write,
+        self$decode_response))
+    }
+  )
+)

@@ -56,8 +56,3 @@ TMemoryBuffer <- R6Class("TMemoryBuffer",
     }
   )
 )
-
-
-    
-
-

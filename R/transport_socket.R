@@ -52,6 +52,8 @@ TSocket <- R6Class("TSocket",
     write = function(buff) {
       writeBin(buff, self$sock)
     },
+    flush = function() {
+    },
     close = function() {
       close(self$sock)
     }

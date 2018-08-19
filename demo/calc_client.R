@@ -1,15 +1,16 @@
 #! /usr/bin/env Rscript
 
-library(thriftr)
+calc_thrift <- thriftr::load("calc/calc.thrift", module_name="calc_thrift")
 
-calc_thrift <- thriftr::thriftr_load("calc/calc.thrift", module_name="calc_thrift")
+cal <- thriftr::make_client(
+    calc_thrift$Calculator,
+    '127.0.0.1',
+    6000)
 
-cal <- make_client(calc_thrift)
-
-#a <- cal$mult(5, 2)
-#b <- cal$sub(7, 3)
-#c <- cal$sub(6, 4)
-#d <- cal$mult(b, 10)
-#e <- cal$add(a, d)
-#f <- cal$div(e, c)
-#print(f)
+a <- cal$mult(5, 2)
+b <- cal$sub(7, 3)
+c <- cal$sub(6, 4)
+d <- cal$mult(b, 10)
+e <- cal$add(a, d)
+f <- cal$div(e, c)
+print(f)

@@ -141,9 +141,11 @@ gen_init = function(cls, thrift_spec=NULL, default_spec=NULL) {
 #' @export
 TPayload <- R6Class("TPayload",
   public = list(
-    add_public = function(name, obj) {
-      self[[name]] <- obj
-      environment(self[[name]]) <- environment(self$add_public)
+    read = function(iprot) {
+      iprot$read_struct(self)
+    },
+    write = function(oprot) {
+      oprot$write_struct(self)
     }
   )
 )
@@ -158,11 +160,101 @@ TPayload <- R6Class("TPayload",
 #'
 #' @export
 TClient <- R6Class("TClient",
+  lock = FALSE,
   public = list(
+    initialize = function(service, iprot, oprot=NULL) {
+      private$service <- service
+      private$iprot <- iprot
+      private$oprot <- iprot
+      if (!is.null(oprot)) {
+        private$oprot <- oprot
+      }
+      private$seqid <- 0
+
+      for (api in private$service$thrift_services) {
+        func <- private$getFunc(api)
+
+        args <- alist()
+        args_thrift <- private$service[[paste(api, "args", sep = "_")]]
+        args_spec <- args_thrift$thrift_spec
+        args_default <- args_thrift$default_spec
+        for(s in names(args_spec)) {
+          arg_name <- args_spec[[s]][[2]]
+          default <- NA
+          for (d in args_default) {
+            if (d[[1]] == arg_name) default <- d[[2]]
+          }
+          args[[arg_name]] <- default
+        }
+        formals(func) <- args
+
+        self$add_function(api, func)
+      }
+    },
+    add_function = function(name, meth) {
+      self[[name]] <- meth
+    }
+  ),
+  private = list(
     service = NA,
-    iprot   = NA,
-    oprot   = NA,
-    initialize = function(service, iprot, oprot=TRUE) {
+    iprot = NA,
+    oprot = NA,
+    seqid = NA,
+    getFunc = function(v_api) {
+      api <- v_api
+      result_cls <- private$service[[paste(api, "result", sep = "_")]]$new()
+      function() {
+        kwargs <- as.list(environment())
+        private$send(api, kwargs)
+        # wait result only if non-oneway
+        if (!result_cls$oneway) {
+          return(private$recv(api))
+        }
+      }
+    },
+    send = function(api, kwargs) {
+      private$oprot$write_message_begin(api, TMessageType$CALL, private$seqid)
+      args <- private$service[[paste(api, "args", sep = "_")]]$new()
+      for(arg_name in names(kwargs)) {
+        args[[arg_name]] <- kwargs[[arg_name]]
+      }
+      args$write(private$oprot)
+      private$oprot$write_message_end()
+      private$oprot$trans$flush()
+    },
+    recv = function(api) {
+      fname_mtype_rseqid <- private$iprot$read_message_begin()
+      fname <- fname_mtype_rseqid[[1]]
+      mtype <- fname_mtype_rseqid[[2]]
+      rseqid <- fname_mtype_rseqid[[3]]
+      if (mtype == TMessageType$EXCEPTION) {
+        x <- TApplicationException()
+        x$read(private$iprot)
+        private$iprot$read_message_end()
+        stop(x)
+      }
+      result <- private$service[[paste(api, "result", sep = "_")]]$new()
+      result$read(private$iprot)
+      private$iprot$read_message_end()
+
+      if (!is.null(result$success) && !is.na(result$success)) {
+        return(result$success)
+      }
+
+      # void api without throws
+      if (length(names(result$thrift_spec)) == 0) {
+        return
+      }
+
+# # check throws
+# for k, v in result.__dict__.items():
+# if k != "success" and v:
+# raise v
+#
+# # no throws & not void api
+# if hasattr(result, "success"):
+# raise TApplicationException(TApplicationException.MISSING_RESULT)
+
     }
   )
 )

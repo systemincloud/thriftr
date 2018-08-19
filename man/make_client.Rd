@@ -4,10 +4,7 @@
 \alias{make_client}
 \title{Create client side thrift API}
 \usage{
-make_client(service, host = "localhost", port = 9090,
-  proto_factory = TBinaryProtocolFactory$new(),
-  trans_factory = TBufferedTransportFactory$new(), timeout = NA,
-  cafile = NA, ssl_context = NA, certfile = NA, keyfile = NA)
+make_client(service, host = "localhost", port = 9090)
 }
 \arguments{
 \item{service}{a}
