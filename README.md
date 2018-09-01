@@ -46,9 +46,11 @@ Dispatcher <- R6::R6Class("Dispatcher",
     ping = function() {
       return('pong')
     }
+  )
+)
 
 server = thriftr::make_server(pingpong_thrift.PingPong, Dispatcher(), '127.0.0.1', 6000)
-server.serve()
+server$serve()
 ```
 
 And a client:

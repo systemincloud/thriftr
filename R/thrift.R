@@ -160,7 +160,7 @@ TPayload <- R6Class("TPayload",
 #'
 #' @export
 TClient <- R6Class("TClient",
-  lock = FALSE,
+  lock_objects = FALSE,
   public = list(
     initialize = function(service, iprot, oprot=NULL) {
       private$service <- service
@@ -246,16 +246,117 @@ TClient <- R6Class("TClient",
         return
       }
 
-# # check throws
-# for k, v in result.__dict__.items():
-# if k != "success" and v:
-# raise v
-#
-# # no throws & not void api
-# if hasattr(result, "success"):
-# raise TApplicationException(TApplicationException.MISSING_RESULT)
+      # check throws
+      # for k, v in result.__dict__.items():
+      # if k != "success" and v:
+      # raise v
 
+      # no throws & not void api
+      if (!is.null(result$success)) {
+        stop(paste("[TApplicationException]", TApplicationException$MISSING_RESULT))
+      }
     }
+  )
+)
+
+#' TProcessor ...
+#'
+#' Base class for procsessor, which works on two streams.
+#'
+#' @docType class
+#' @importFrom R6 R6Class
+#' @format An \code{\link{R6Class}} generator object
+TProcessor <- R6Class("TProcessor",
+  public = list(
+    initialize = function(service, handler) {
+      private$service <- service
+      private$handler <- handler
+    },
+    process_in = function(iprot) {
+      api_type_seqid <- iprot$read_message_begin()
+      api <- api_type_seqid[[1]]
+      type <- api_type_seqid[[2]]
+      seqid <- api_type_seqid[[3]]
+      if (!(api %in% private$service$thrift_services)) {
+        iprot$skip(TType$STRUCT)
+        iprot$read_message_end()
+        return(list(api, seqid, TApplicationException$new(TApplicationException$UNKNOWN_METHOD), None))  # noqa
+      }
+
+      args <- private$service[[paste(api, "args", sep = "_")]]$new()
+      args$read(iprot)
+      iprot$read_message_end()
+      result <- private$service[[paste(api, "result", sep = "_")]]$new()
+
+      # convert kwargs to args
+      api_args <- list()
+      for (k in names(args$thrift_spec)) {
+        api_args[[length(api_args) + 1]] <- args$thrift_spec[[k]][[2]]
+      }
+
+      call <- function() {
+        f <- private$handler[[api]]
+        as <- list()
+        for (k in api_args) {
+          as[[length(as) + 1]] <- args[[k]]
+        }
+        names(as) <- api_args
+        return(do.call(f, as))
+      }
+
+      return(list(api, seqid, result, call))
+    },
+    send_exception = function(oprot, api, exc, seqid) {
+      oprot$write_message_begin(api, TMessageType$EXCEPTION, seqid)
+      exc$write(oprot)
+      oprot$write_message_end()
+      oprot$trans.flush()
+    },
+    send_result = function(oprot, api, result, seqid) {
+      oprot$write_message_begin(api, TMessageType$REPLY, seqid)
+      result$write(oprot)
+      oprot$write_message_end()
+      oprot$trans$flush()
+    },
+    handle_exception = function(e, result) {
+      should_raise <- FALSE
+      for (k in result$thrift_spec) {
+        should_raise <- TRUE
+        if (result$thrift_spec[[k]][[2]] == "success") next
+
+        na_exc_name_exc_cls_na = result$thrift_spec[[k]]
+        # if isinstance(e, exc_cls):
+        #   setattr(result, exc_name, e)
+        #   break
+      }
+      if (should_raise) stop()
+    },
+    process = function(iprot, oprot) {
+      api_seqid_result_call <- self$process_in(iprot)
+      api <- api_seqid_result_call[[1]]
+      seqid <- api_seqid_result_call[[2]]
+      result <- api_seqid_result_call[[3]]
+      call <- api_seqid_result_call[[4]]
+
+      if (class(result)[[1]] == "TApplicationException") {
+        return(self$send_exception(oprot, api, result, seqid))
+      }
+
+      tryCatch({
+        result$success <- call()
+      }, error = function(e) {
+        # raise if api don't have throws
+        self$handle_exception(e, result)
+      })
+
+      if (!result$oneway) {
+        self$send_result(oprot, api, result, seqid)
+      }
+    }
+  ),
+  private = list(
+    service = NA,
+    handler = NA
   )
 )
 
@@ -264,6 +365,21 @@ TException <- R6Class("TException",
   public = list(
   )
 )
+
+TApplicationException <- R6Class("TApplicationException",
+  inherit = TException,
+  public = list(
+  )
+)
+
+TApplicationException$UNKNOWN <- 0
+TApplicationException$UNKNOWN_METHOD <- 1
+TApplicationException$INVALID_MESSAGE_TYPE <- 2
+TApplicationException$WRONG_METHOD_NAME <- 3
+TApplicationException$BAD_SEQUENCE_ID <- 4
+TApplicationException$MISSING_RESULT <- 5
+TApplicationException$INTERNAL_ERROR <- 6
+TApplicationException$PROTOCOL_ERROR <- 7
 
 #' @export
 to_proper_struct <- function(thrift_spec_list, default_spec) {

@@ -1,1 +1,4 @@
-calc_client    An example of simple calculator
+calc_client    An example of simple calculator client
+calc_server    An example of simple calculator server
+ping_client    An example of simple client
+sleep_client   An example of client with oneway method

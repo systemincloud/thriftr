@@ -16,6 +16,7 @@ test_socket <- function(server_socket, client_socket) {
   }
 
   client <- function () {
+    Sys.sleep(2)
     client_socket$open()
     buff <- charToRaw("Hello World!")
     client_socket$write(buff)

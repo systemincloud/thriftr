@@ -43,11 +43,18 @@ TSocket <- R6Class("TSocket",
         self$port <- port
         self$server <- server
     },
+    is_open = function() {
+      !is.na(self$sock) && isOpen(self$sock)
+    },
     open = function() {
       private$init_sock()
     },
     read = function(sz) {
-      readBin(self$sock, raw(), sz)
+      ret <- readBin(self$sock, raw(), sz)
+      if (length(ret) == 0) {
+        stop()
+      }
+      ret
     },
     write = function(buff) {
       writeBin(buff, self$sock)
@@ -55,7 +62,11 @@ TSocket <- R6Class("TSocket",
     flush = function() {
     },
     close = function() {
+      if (is.na(self$sock)) {
+        return()
+      }
       close(self$sock)
+      self$sock <- NA
     }
   ),
   private = list(
@@ -76,7 +87,7 @@ TSocket <- R6Class("TSocket",
 #' Socket implementation for server side.
 #'
 #' @docType class
-#' @importFrom R6 R6Class
+#' @importFrom R6 R6Classself$sock$open
 #' @format An \code{\link{R6Class}} generator object
 #'
 #' @export

@@ -371,7 +371,7 @@ skip <- function(inbuf, ftype) {
   else if (ftype == TType$STRUCT) {
     while (TRUE) {
       f_type_fid <- read_field_begin(inbuf)
-      if (f_type_fid[[1]] == TType.STOP) break
+      if (f_type_fid[[1]] == TType$STOP) break
       skip(inbuf, f_type_fid[[1]])
     }
   }

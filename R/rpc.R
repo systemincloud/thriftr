@@ -46,3 +46,30 @@ make_client = function(service,
 
   return(TClient$new(service, protocol))
 }
+
+#' Create server side thrift API
+#'
+#' @param service a
+#' @param host a
+#' @param port a
+#' @param proto_factory a
+#' @param trans_factory a
+#'
+#' @export
+make_server = function(service,
+    handler,
+    host="localhost",
+    port=9090,
+    proto_factory=TBinaryProtocolFactory$new(),
+    trans_factory=TBufferedTransportFactory$new()) {
+  processor <- TProcessor$new(service, handler)
+
+  server_socket <- TServerSocket$new(
+     host=host, port=port)
+
+  server <- TSimpleServer$new(processor, server_socket,
+      iprot_factory=proto_factory,
+      itrans_factory=trans_factory)
+
+  return(server)
+}
