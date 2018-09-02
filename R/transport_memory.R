@@ -1,7 +1,7 @@
 
 #' TMemoryBuffer
 #' 
-#' Wraps a BytesIO object as a TTransport.
+#' Wraps a raw array as a TTransport.
 #' 
 #' @docType class
 #' @importFrom R6 R6Class

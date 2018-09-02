@@ -87,7 +87,7 @@ TSocket <- R6Class("TSocket",
 #' Socket implementation for server side.
 #'
 #' @docType class
-#' @importFrom R6 R6Classself$sock$open
+#' @importFrom R6 R6Class
 #' @format An \code{\link{R6Class}} generator object
 #'
 #' @export

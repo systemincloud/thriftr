@@ -3,12 +3,12 @@
 \docType{class}
 \name{TPayload}
 \alias{TPayload}
-\title{TPayload ...}
+\title{TPayload}
 \format{An \code{\link{R6Class}} generator object}
 \usage{
 TPayload
 }
 \description{
-This class is ...
+Base class for all complex types of api.
 }
 \keyword{datasets}

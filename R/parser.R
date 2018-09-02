@@ -34,6 +34,9 @@
 #' @return Thrift R6 class instance
 #'
 #' @export
+#'
+#' @examples
+#' pp_thrift <- thriftr::load("../../demo/ping/pingpong.thrift", module_name="pp_thrift")
 load <- function(path, module_name=NA, include_dirs=NA) {
   thrift <- parse(path, module_name, include_dirs = include_dirs)
   return(thrift)
@@ -900,8 +903,8 @@ Parser$thrift_cache = new.env(hash = TRUE)
 #'                    without extension of `path`
 #' @param include_dirs directories to find thrift files while processing
 #'                     the `include` directive, by default: ['.']
-#' @param lexer rly lexer to use, if not provided, `parse` will new one
-#' @param parser rly parser to use, if not provided, `parse` will new one
+#' @param lexer rly lexer to use, if not provided, `parse` will use a new one
+#' @param parser rly parser to use, if not provided, `parse` will use a new one
 #' @param enable_cache if this is set to be `TRUE`, parsed module will be
 #'                     cached, this is enabled by default. If `module_name`
 #'                     is provided, use it as cache key, else use the `path`

@@ -3,12 +3,12 @@
 \docType{class}
 \name{TClient}
 \alias{TClient}
-\title{TClient ...}
+\title{TClient}
 \format{An \code{\link{R6Class}} generator object}
 \usage{
 TClient
 }
 \description{
-This class is ...
+TClient implements client api of thrift service.
 }
 \keyword{datasets}

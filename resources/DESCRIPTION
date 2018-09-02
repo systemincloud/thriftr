@@ -15,6 +15,7 @@ License: MIT + file LICENSE
 URL: ${project.url}
 BugReports: ${project.issueManagement.url}
 Suggests: testthat
+Encoding: UTF-8
 Imports:
     R6,
     rly

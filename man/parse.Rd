@@ -16,9 +16,9 @@ without extension of `path`}
 \item{include_dirs}{directories to find thrift files while processing
 the `include` directive, by default: ['.']}
 
-\item{lexer}{rly lexer to use, if not provided, `parse` will new one}
+\item{lexer}{rly lexer to use, if not provided, `parse` will use a new one}
 
-\item{parser}{rly parser to use, if not provided, `parse` will new one}
+\item{parser}{rly parser to use, if not provided, `parse` will use a new one}
 
 \item{enable_cache}{if this is set to be `TRUE`, parsed module will be
 cached, this is enabled by default. If `module_name`

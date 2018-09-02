@@ -22,11 +22,11 @@
 
 #' Create client side thrift API
 #'
-#' @param service a
-#' @param host a
-#' @param port a
-#' @param proto_factory a
-#' @param trans_factory a
+#' @param service parsed service
+#' @param host server host
+#' @param port server tcp port
+#' @param proto_factory factory that generates protocol implementation
+#' @param trans_factory factory that generates transport implementation
 #' 
 #' @export
 make_client = function(service,
@@ -49,11 +49,12 @@ make_client = function(service,
 
 #' Create server side thrift API
 #'
-#' @param service a
-#' @param host a
-#' @param port a
-#' @param proto_factory a
-#' @param trans_factory a
+#' @param service parsed service
+#' @param handler R6 class implementing service
+#' @param host server host
+#' @param port port server tcp port
+#' @param proto_factory factory that generates protocol implementation
+#' @param trans_factory factory that generates transport implementation
 #'
 #' @export
 make_server = function(service,

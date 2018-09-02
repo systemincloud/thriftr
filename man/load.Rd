@@ -22,3 +22,6 @@ Thrift R6 class instance
 The module loaded and objects inside may only be pickled if module_name
 was provided.
 }
+\examples{
+pp_thrift <- thriftr::load("../../demo/ping/pingpong.thrift", module_name="pp_thrift")
+}

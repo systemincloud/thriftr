@@ -20,7 +20,51 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+#' hexlify
+#'
+#' String representation of raw array
+#'
+#' @param byte_array raw array
+#' @param delimeter separation character
+#'
+#' @return string
+#'
 #' @export
 hexlify = function(byte_array, delimeter = ' ') {
   as.character(paste(byte_array, collapse = delimeter))
+}
+
+#' to_proper_struct
+#'
+#' Help method for tests. It changes predefined structure to parsed thrift
+#' instead of parsing file.
+#'
+#' @param thrift_spec_list raw array
+#' @param default_spec separation character
+#'
+#' @return R6 class
+#'
+#' @export
+to_proper_struct <- function(thrift_spec_list, default_spec) {
+  thrift_spec <- new.env(hash = TRUE)
+  for (input in thrift_spec_list) {
+    thrift_spec[[input[[1]]]] <- input[[2]]
+  }
+
+  TItem <- R6::R6Class(
+    "TItem",
+    inherit = thriftr::TPayload,
+    lock_objects = FALSE,
+    public = list(
+    )
+  )
+
+  TItem$set("public", 'thrift_spec', thrift_spec)
+  TItem$set("public", 'default_spec', default_spec)
+
+  gen_init(
+    TItem,
+    thrift_spec,
+    default_spec
+  )
 }

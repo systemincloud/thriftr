@@ -83,7 +83,13 @@ write_map_begin = function(outbuf, ktype, vtype, size) {
   outbuf$write(c(pack_i8(ktype), pack_i8(vtype), pack_i32(size)))
 }
 
-
+#' Binary protocol: write value to binary buffer
+#'
+#' @param outbuf binary buffor
+#' @param ttype type of value
+#' @param val value to write
+#' @param spec specification of value
+#'
 #' @export
 binary_write_val <- function(outbuf, ttype, val, spec = NA) {
   if (ttype == TType$BOOL) {
@@ -210,6 +216,15 @@ read_map_begin = function(inbuf) {
   return(list(k_type, v_type, sz))
 }
 
+#' Binary protocol: read value from binary buffer
+#'
+#' @param inbuf binary buffor
+#' @param ttype type of value
+#' @param spec specification of value
+#' @param decode_response for string decode binary as chars
+#'
+#' @return value of type ttype
+#'
 #' @export
 binary_read_val <- function(inbuf, ttype, spec = NA, decode_response = TRUE) {
   if (ttype == TType$BOOL) {
@@ -422,9 +437,9 @@ TBinaryProtocol <- R6Class("TBinaryProtocol",
   )
 )
 
-#' TBinaryProtocolFactory ...
+#' TBinaryProtocolFactory
 #'
-#' This class is ...
+#' TBinaryProtocolFactory generates TBinaryProtocol driver.
 #'
 #' @docType class
 #' @importFrom R6 R6Class

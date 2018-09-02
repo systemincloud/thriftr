@@ -63,6 +63,8 @@ TBufferedTransport <- R6Class("TBufferedTransport",
 
 #' TBufferedTransportFactory
 #'
+#' TBufferedTransportFactory generates TBufferedTransport.
+#'
 #' @docType class
 #' @importFrom R6 R6Class
 #' @format An \code{\link{R6Class}} generator object

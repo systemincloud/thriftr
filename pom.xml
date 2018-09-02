@@ -6,7 +6,7 @@
   <artifactId>thriftr</artifactId>
   <version>1.0.0</version>
   <packaging>pom</packaging>
-  <name>Apache Thrift Client</name>
+  <name>Apache Thrift Client Server</name>
   
   <description>R implementation of Apache Thrift.</description>
   <url>https://github.com/systemincloud/thriftr</url>
@@ -17,7 +17,10 @@
   </organization>
   
   <developers>
-    <developer><name>Marek Jagielski</name><email>marek.jagielski@gmail.com</email></developer>
+    <developer>
+      <name>Marek Jagielski</name>
+      <email>marek.jagielski@gmail.com</email>
+    </developer>
   </developers>
   
   <issueManagement>
@@ -95,8 +98,12 @@
               </arguments>
             </configuration>
           </execution>
-          <execution><id>install</id><phase>install</phase>
-            <goals><goal>exec</goal></goals>
+          <execution>
+            <id>install</id>
+            <phase>install</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
             <configuration>
               <arguments>
                 <argument>CMD</argument>
@@ -113,7 +120,8 @@
         <artifactId>maven-antrun-plugin</artifactId>
         <version>1.8</version>
         <executions>
-          <execution><id>package</id><phase>package</phase>
+          <execution><id>package</id>
+            <phase>package</phase>
             <configuration>
               <target>
                 <move file="${project.basedir}/../${project.artifactId}_${project.version}.tar.gz" todir="${project.basedir}/target"/>
@@ -131,7 +139,9 @@
         <version>3.0.0</version>
 	      <extensions>true</extensions>
 	      <executions>
-	        <execution><id>attach-artifacts</id><phase>package</phase>
+	        <execution>
+              <id>attach-artifacts</id>
+              <phase>package</phase>
 	          <goals><goal>attach-artifact</goal></goals>
 	          <configuration>
 	            <artifacts>

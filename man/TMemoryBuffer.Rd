@@ -9,6 +9,6 @@
 TMemoryBuffer
 }
 \description{
-Wraps a BytesIO object as a TTransport.
+Wraps a raw array as a TTransport.
 }
 \keyword{datasets}

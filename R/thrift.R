@@ -22,7 +22,7 @@
 
 #' parse_spec
 #'
-#' Generate `initialize` function based on TPayload$default_spec
+#' String representation of specification
 #'
 #' @param ttype type
 #' @param spec specification
@@ -61,16 +61,14 @@ parse_spec = function(ttype, spec = NA) {
   }
 }
 
-#' init_func_generator
-#'
-#' Generate `initialize` function based on TPayload$default_spec
-#'
-#' @param cls R6 class
-#' @param spec specification
-#'
-#' @return constructor function
-#'
-#' @export
+# init_func_generator
+#
+# Generate `initialize` function based on TPayload$default_spec
+#
+# @param cls R6 class
+# @param spec specification
+#
+# @return constructor function
 init_func_generator = function(cls, spec) {
   if(length(spec) == 0) return(function() { })
 
@@ -92,35 +90,35 @@ init_func_generator = function(cls, spec) {
 
 #' TType
 #'
-#' @export
-TType <- new.env(hash=TRUE)
-TType$STOP   <- as.integer(0)
-TType$VOID   <- as.integer(1)
-TType$BOOL   <- as.integer(2)
-TType$BYTE   <- as.integer(3)
-TType$I08    <- as.integer(3)
-TType$DOUBLE <- as.integer(4)
-TType$I16    <- as.integer(6)
-TType$I32    <- as.integer(8)
-TType$I64    <- as.integer(10)
-TType$STRING <- as.integer(11)
-TType$UTF7   <- as.integer(11)
-TType$BINARY <- as.integer(11)  # This here just for parsing. For all purposes, it's a string
-TType$STRUCT <- as.integer(12)
-TType$MAP    <- as.integer(13)
-TType$SET    <- as.integer(14)
-TType$LIST   <- as.integer(15)
-TType$UTF8   <- as.integer(16)
-TType$UTF16  <- as.integer(17)
-
-#' TMessageType
+#' Identificator of value type.
 #'
 #' @export
+TType <- new.env(hash=TRUE)
+TType$STOP <- as.integer(0)
+TType$VOID <- as.integer(1)
+TType$BOOL <- as.integer(2)
+TType$BYTE <- as.integer(3)
+TType$I08 <- as.integer(3)
+TType$DOUBLE <- as.integer(4)
+TType$I16 <- as.integer(6)
+TType$I32 <- as.integer(8)
+TType$I64 <- as.integer(10)
+TType$STRING <- as.integer(11)
+TType$UTF7 <- as.integer(11)
+TType$BINARY <- as.integer(11)  # This here just for parsing. For all purposes, it's a string
+TType$STRUCT <- as.integer(12)
+TType$MAP <- as.integer(13)
+TType$SET <- as.integer(14)
+TType$LIST <- as.integer(15)
+TType$UTF8 <- as.integer(16)
+TType$UTF16 <- as.integer(17)
+
+# TMessageType
 TMessageType <- new.env(hash=TRUE)
-TMessageType$CALL      <- as.integer(1)
-TMessageType$REPLY     <- as.integer(2)
+TMessageType$CALL <- as.integer(1)
+TMessageType$REPLY <- as.integer(2)
 TMessageType$EXCEPTION <- as.integer(3)
-TMessageType$ONEWAY    <- as.integer(4)
+TMessageType$ONEWAY <- as.integer(4)
 
 
 gen_init = function(cls, thrift_spec=NULL, default_spec=NULL) {
@@ -130,9 +128,9 @@ gen_init = function(cls, thrift_spec=NULL, default_spec=NULL) {
   return(cls)
 }
 
-#' TPayload ...
+#' TPayload
 #'
-#' This class is ...
+#' Base class for all complex types of api.
 #'
 #' @docType class
 #' @importFrom R6 R6Class
@@ -150,9 +148,9 @@ TPayload <- R6Class("TPayload",
   )
 )
 
-#' TClient ...
+#' TClient
 #'
-#' This class is ...
+#' TClient implements client api of thrift service.
 #'
 #' @docType class
 #' @importFrom R6 R6Class
@@ -259,13 +257,9 @@ TClient <- R6Class("TClient",
   )
 )
 
-#' TProcessor ...
-#'
-#' Base class for procsessor, which works on two streams.
-#'
-#' @docType class
-#' @importFrom R6 R6Class
-#' @format An \code{\link{R6Class}} generator object
+# TProcessor
+#
+# Base class for procsessor, which works on two streams.
 TProcessor <- R6Class("TProcessor",
   public = list(
     initialize = function(service, handler) {
@@ -380,28 +374,3 @@ TApplicationException$BAD_SEQUENCE_ID <- 4
 TApplicationException$MISSING_RESULT <- 5
 TApplicationException$INTERNAL_ERROR <- 6
 TApplicationException$PROTOCOL_ERROR <- 7
-
-#' @export
-to_proper_struct <- function(thrift_spec_list, default_spec) {
-  thrift_spec <- new.env(hash = TRUE)
-  for (input in thrift_spec_list) {
-    thrift_spec[[input[[1]]]] <- input[[2]]
-  }
-  
-  TItem <- R6::R6Class(
-    "TItem",
-    inherit = thriftr::TPayload,
-    lock_objects = FALSE,
-    public = list(
-    )
-  )
-  
-  TItem$set("public", 'thrift_spec', thrift_spec)
-  TItem$set("public", 'default_spec', default_spec)
-
-  gen_init(
-    TItem,
-    thrift_spec, 
-    default_spec
- )
-}

@@ -3,12 +3,12 @@
 \docType{class}
 \name{TBinaryProtocolFactory}
 \alias{TBinaryProtocolFactory}
-\title{TBinaryProtocolFactory ...}
+\title{TBinaryProtocolFactory}
 \format{An \code{\link{R6Class}} generator object}
 \usage{
 TBinaryProtocolFactory
 }
 \description{
-This class is ...
+TBinaryProtocolFactory generates TBinaryProtocol driver.
 }
 \keyword{datasets}

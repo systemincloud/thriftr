@@ -9,6 +9,6 @@
 TType
 }
 \description{
-TType
+Identificator of value type.
 }
 \keyword{datasets}
