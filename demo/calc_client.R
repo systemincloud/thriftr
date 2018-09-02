@@ -1,6 +1,6 @@
 #! /usr/bin/env Rscript
 
-calc_thrift <- thriftr::load("calc/calc.thrift", module_name="calc_thrift")
+calc_thrift <- thriftr::t_load("calc/calc.thrift", module_name="calc_thrift")
 
 cal <- thriftr::make_client(
     calc_thrift$Calculator,

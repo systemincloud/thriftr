@@ -34,10 +34,7 @@
 #' @return Thrift R6 class instance
 #'
 #' @export
-#'
-#' @examples
-#' pp_thrift <- thriftr::load("../../demo/ping/pingpong.thrift", module_name="pp_thrift")
-load <- function(path, module_name=NA, include_dirs=NA) {
+t_load <- function(path, module_name=NA, include_dirs=NA) {
   thrift <- parse(path, module_name, include_dirs = include_dirs)
   return(thrift)
 }

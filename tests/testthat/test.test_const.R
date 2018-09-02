@@ -4,7 +4,7 @@ library(testthat)
 
 context("const")
 
-thrift <- thriftr::load("const.thrift")
+thrift <- thriftr::t_load("const.thrift")
 
 test_that("test_num_const", {
   expect_equal(thrift$NEGATIVE_I16,    -10)

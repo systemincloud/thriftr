@@ -1,6 +1,6 @@
 #! /usr/bin/env Rscript
 
-sleep_thrift <- thriftr::load("oneway/sleep.thrift", module_name="sleep_thrift")
+sleep_thrift <- thriftr::t_load("oneway/sleep.thrift", module_name="sleep_thrift")
 
 client <- thriftr::make_client(
     sleep_thrift$Sleep,

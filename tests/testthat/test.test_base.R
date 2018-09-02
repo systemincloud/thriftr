@@ -4,8 +4,8 @@ library(testthat)
 
 context("base")
 
-ab  <- thriftr::load("addressbook.thrift")
-ab2 <- thriftr::load("addressbook.thrift")
+ab  <- thriftr::t_load("addressbook.thrift")
+ab2 <- thriftr::t_load("addressbook.thrift")
 
 test_that("test_obj_equalcheck", {
   expect_equal(ab$Person$new(name="hello"),

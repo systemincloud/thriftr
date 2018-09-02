@@ -5,11 +5,11 @@ library(testthat)
 context("parser")
 
 test_that("test_comments", {
-  thriftr::load("parser-cases/comments.thrift")
+  thriftr::t_load("parser-cases/comments.thrift")
 })
 
 test_that("test_constants", {
-  thrift <- thriftr::load("parser-cases/constants.thrift")
+  thrift <- thriftr::t_load("parser-cases/constants.thrift")
   expect_that(thrift$tbool, equals(TRUE))
   expect_that(thrift$tboolint, equals(TRUE))
   expect_that(thrift$int16, equals(3))
@@ -32,12 +32,12 @@ test_that("test_constants", {
 })
 
 test_that("test_include", {
-  thrift <- thriftr::load("parser-cases/include.thrift")
+  thrift <- thriftr::t_load("parser-cases/include.thrift")
   expect_that(thrift$datetime, equals(1422009523))
 })
 
 test_that("test_tutorial", {
-  thrift <- thriftr::load("parser-cases/tutorial.thrift",
+  thrift <- thriftr::t_load("parser-cases/tutorial.thrift",
       include_dirs = list("./parser-cases"))
   expect_equal(thrift$INT32CONSTANT, 9853)
   expect_equal(thrift$MAPCONSTANT[["hello"]], "world")
@@ -59,16 +59,16 @@ test_that("test_tutorial", {
 })
 
 test_that("test_e_type_error", {
-  expect_error(thriftr::load("parser-cases/e_type_error_0.thrift"),
+  expect_error(thriftr::t_load("parser-cases/e_type_error_0.thrift"),
       "\\[ThriftParserError\\]Type error for constant int32 at line 1")
-  expect_error(thriftr::load("parser-cases/e_type_error_1.thrift"),
+  expect_error(thriftr::t_load("parser-cases/e_type_error_1.thrift"),
       "\\[ThriftParserError\\]Type error for constant dct at line 1")
-  expect_error(thriftr::load("parser-cases/e_type_error_2.thrift"),
+  expect_error(thriftr::t_load("parser-cases/e_type_error_2.thrift"),
       "\\[ThriftParserError\\]Type error for constant jack at line 6")
 })
 
 test_that("test_value_ref", {
-  thrift <- thriftr::load("parser-cases/value_ref.thrift")
+  thrift <- thriftr::t_load("parser-cases/value_ref.thrift")
   expect_equal(thrift$container$key[[1]], 1)
   expect_equal(thrift$container$key[[2]], 2)
   expect_equal(thrift$container$key[[3]], 3)
@@ -78,7 +78,7 @@ test_that("test_value_ref", {
 })
 
 test_that("test_type_ref", {
-  thrift <- thriftr::load("parser-cases/type_ref.thrift")
+  thrift <- thriftr::t_load("parser-cases/type_ref.thrift")
   expect_equal(thrift$jerry$name, "jerry")
   expect_equal(thrift$jerry$age, 26)
   expect_equal(thrift$jerry$country, thrift$type_ref_shared$Country$US)
@@ -89,16 +89,16 @@ test_that("test_type_ref", {
 })
 
 test_that("test_e_value_ref", {
-  expect_error(thriftr::load("parser-cases/e_value_ref_0.thrift"),
+  expect_error(thriftr::t_load("parser-cases/e_value_ref_0.thrift"),
       "\\[ThriftParserError\\]Can't find name ref at line 1")
-  expect_error(thriftr::load("parser-cases/e_value_ref_1.thrift"),
+  expect_error(thriftr::t_load("parser-cases/e_value_ref_1.thrift"),
       "\\[ThriftParserError\\]Couldn't find a named value in enum Lang for value 3")
-  expect_error(thriftr::load("parser-cases/e_value_ref_2.thrift"),
+  expect_error(thriftr::t_load("parser-cases/e_value_ref_2.thrift"),
       "\\[ThriftParserError\\]No enum value or constant found named Cookbook")
 })
 
 test_that("test_enums", {
-  thrift <- thriftr::load("parser-cases/enums.thrift")
+  thrift <- thriftr::t_load("parser-cases/enums.thrift")
   expect_equal(thrift$Lang$C, 0)
   expect_equal(thrift$Lang$Go, 1)
   expect_equal(thrift$Lang$Java, 2)
@@ -115,7 +115,7 @@ test_that("test_enums", {
 })
 
 test_that("test_structs", {
-  thrift <- thriftr::load("parser-cases/structs.thrift")
+  thrift <- thriftr::t_load("parser-cases/structs.thrift")
   expect_equal(thrift$Person$thrift_spec[["1"]][[1]], thriftr::TType$STRING)
   expect_equal(thrift$Person$thrift_spec[["1"]][[2]], "name")
   expect_equal(thrift$Person$thrift_spec[["1"]][[3]], FALSE)
@@ -157,14 +157,14 @@ test_that("test_structs", {
 })
 
 test_that("test_e_structs", {
-  expect_error(thriftr::load("parser-cases/e_structs_0.thrift"),
+  expect_error(thriftr::t_load("parser-cases/e_structs_0.thrift"),
       "\\[ThriftParserError\\]Field name was required to create constant for type User")
-  expect_error(thriftr::load("parser-cases/e_structs_1.thrift"),
+  expect_error(thriftr::t_load("parser-cases/e_structs_1.thrift"),
       "\\[ThriftParserError\\]No field named avatar was found in struct of type User")
 })
 
 test_that("test_service", {
-  thrift <- thriftr::load("parser-cases/service.thrift")
+  thrift <- thriftr::t_load("parser-cases/service.thrift")
   expect_equal(thrift$EmailService$thrift_services[[1]], "ping")
   expect_equal(thrift$EmailService$thrift_services[[2]], "send")
   expect_equal(length(names(thrift$EmailService$ping_args$thrift_spec)), 0)
@@ -207,40 +207,40 @@ test_that("test_service", {
 })
 
 test_that("test_service_extends", {
-  thrift <- thriftr::load("parser-cases/service_extends.thrift")
+  thrift <- thriftr::t_load("parser-cases/service_extends.thrift")
   expect_equal(thrift$PingService$thrift_services[[1]], "ping")
   expect_equal(thrift$PingService$thrift_services[[2]], "getStruct")
 })
 
 test_that("test_e_service_extends", {
-  expect_error(thrift <- thriftr::load("parser-cases/e_service_extends_0.thrift"),
+  expect_error(thrift <- thriftr::t_load("parser-cases/e_service_extends_0.thrift"),
       "\\[ThriftParserError\\]Can't find service shared.NotExistService for service PingService to extend")
 })
 
 test_that("test_e_dead_include", {
-  expect_error(thriftr::load("parser-cases/e_dead_include_0.thrift"),
+  expect_error(thriftr::t_load("parser-cases/e_dead_include_0.thrift"),
       "\\[ThriftParserError\\]Dead including")
 })
 
 test_that("test_e_grammer_error_at_eof", {
-  expect_error(thriftr::load("parser-cases/e_grammer_error_at_eof.thrift"),
+  expect_error(thriftr::t_load("parser-cases/e_grammer_error_at_eof.thrift"),
       "\\[ThriftGrammerError\\]Grammar error at EOF")
 })
 
 test_that("test_e_use_thrift_reserved_keywords", {
-  expect_error(thriftr::load("parser-cases/e_use_thrift_reserved_keywords.thrift"),
+  expect_error(thriftr::t_load("parser-cases/e_use_thrift_reserved_keywords.thrift"),
       "\\[ThriftLexerError\\]Cannot use reserved language keyword: next at line 1")
 })
 
 test_that("test_e_duplicate_field_id_or_name", {
-  expect_error(thriftr::load("parser-cases/e_duplicate_field_id.thrift"),
+  expect_error(thriftr::t_load("parser-cases/e_duplicate_field_id.thrift"),
       "\\[ThriftGrammerError\\]'1:efg' field identifier/name has already been used")
-  expect_error(thriftr::load("parser-cases/e_duplicate_field_name.thrift"),
+  expect_error(thriftr::t_load("parser-cases/e_duplicate_field_name.thrift"),
       "\\[ThriftGrammerError\\]\\'2:abc\\' field identifier/name has already been used")
 })
 
 test_that("test_thrift_meta", {
-  thrift <- thriftr::load("parser-cases/tutorial.thrift")
+  thrift <- thriftr::t_load("parser-cases/tutorial.thrift")
   meta <- thrift$thrift_meta
   expect_equal(meta$consts[[1]], thrift$INT32CONSTANT)
   expect_equal(meta$consts[[2]], thrift$MAPCONSTANT)
@@ -252,7 +252,7 @@ test_that("test_thrift_meta", {
 })
 
 test_that("test_recursive_union", {
-  thrift <- thriftr::load("parser-cases/recursive_union.thrift")
+  thrift <- thriftr::t_load("parser-cases/recursive_union.thrift")
   expect_equal(thrift$Dynamic$thrift_spec[["1"]][[1]], thriftr::TType$BOOL)
   expect_equal(thrift$Dynamic$thrift_spec[["1"]][[2]], "boolean")
   expect_equal(thrift$Dynamic$thrift_spec[["1"]][[3]], FALSE)
@@ -279,7 +279,7 @@ test_that("test_recursive_union", {
 })
 
 test_that("test_issue_215", {
-  thrift <- thriftr::load("parser-cases/issue_215.thrift")
+  thrift <- thriftr::t_load("parser-cases/issue_215.thrift")
   expect_equal(thrift$abool, TRUE)
   expect_equal(thrift$falsevalue, 123)
 })

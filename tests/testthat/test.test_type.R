@@ -5,7 +5,7 @@ library(testthat)
 context("type")
 
 test_that("test_set", {
-  s <- thriftr::load("type.thrift")
+  s <- thriftr::t_load("type.thrift")
   expect_that(s$thrift_file, equals('type.thrift'))
   expect_that(names(s$thrift_meta), equals('structs'))
   expect_that(s$Set$thrift_spec[["1"]][[1]], equals(thriftr::TType$SET))
