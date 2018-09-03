@@ -1,0 +1,33 @@
+Package: thriftr
+Type: Package
+Title: Apache Thrift Client Server
+Version: 1.0.1
+Date: 2018-09-03
+Authors@R: c(person("Marek", "Jagielski",
+                    role = c("aut", "cre", "cph"),
+                    email = "marek.jagielski@gmail.com"),
+             person("Lixin", "Yu",
+                    role = c("aut", "cph")))
+Author: Marek Jagielski [aut, cre, cph], Lixin Yu [aut, cph]
+Maintainer: Marek Jagielski <marek.jagielski@gmail.com>
+Description: R implementation of Apache Thrift.
+License: MIT + file LICENSE
+URL: https://github.com/systemincloud/thriftr
+BugReports: https://github.com/systemincloud/thriftr/issues
+Suggests: testthat
+Encoding: UTF-8
+Imports:
+    R6,
+    rly
+RoxygenNote: 6.0.1
+Collate:
+    'thrift.R'
+    'transport.R'
+    'rpc.R'
+    'parser.R'
+    'protocol_binary.R'
+    'server.R'
+    'transport_buffered.R'
+    'transport_memory.R'
+    'transport_socket.R'
+    'utils.R'
