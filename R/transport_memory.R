@@ -15,8 +15,8 @@ TMemoryBuffer <- R6Class("TMemoryBuffer",
     pos = NA,
     # value -- a value as the initial value in the buffer object.
     # If value is set, the transport can be read first.
-    initialize = function(value = NA) {
-      if (!is.na(value)) {
+    initialize = function(value = NULL) {
+      if (!is.null(value)) {
         self$buffer <- value
       } else {
         self$buffer <- raw()
