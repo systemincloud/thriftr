@@ -2,6 +2,7 @@
 ^\.settings$
 ^\.gitignore$
 ^\.idea
+^\.travis.yml
 ^thriftr.code-workspace$
 ^thriftr.iml
 ^pom.xml$
