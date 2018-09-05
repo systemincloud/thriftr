@@ -44,7 +44,7 @@ parse_spec = function(ttype, spec = NA) {
     }
   }
 
-  if (is.na(spec)) {
+  if (length(spec) == 1 && is.na(spec)) {
     return(name_map[[as.character(ttype)]])
   }
         

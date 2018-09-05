@@ -2,7 +2,7 @@ Package: thriftr
 Type: Package
 Title: Apache Thrift Client Server
 Version: 1.0.2
-Date: 2018-09-04
+Date: 2018-09-05
 Authors@R: c(person("Marek", "Jagielski",
                     role = c("aut", "cre", "cph"),
                     email = "marek.jagielski@gmail.com"),
@@ -18,7 +18,8 @@ Suggests: testthat
 Encoding: UTF-8
 Imports:
     R6,
-    rly
+    rly,
+    stringi
 RoxygenNote: 6.0.1
 Collate:
     'thrift.R'

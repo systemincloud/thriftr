@@ -162,7 +162,7 @@ binary_write_val <- function(outbuf, ttype, val, spec = NA) {
       }
 
       v <- val[[f_name]]
-      if (is.na(v)) next
+      if (length(v) == 1 && is.na(v)) next
 
       write_field_begin(outbuf, f_type, fid)
       binary_write_val(outbuf, f_type, v, f_container_spec)
@@ -246,7 +246,7 @@ binary_read_val <- function(inbuf, ttype, spec = NA, decode_response = TRUE) {
     # Since we cannot tell if we're getting STRING or BINARY
     # if not asked not to decode, try both
     if (decode_response) {
-      return(rawToChar(byte_payload))
+      return(stringi::stri_encode(rawToChar(byte_payload), from = "UTF-8", to = "UTF-8"))
       # TODO
     } else return(byte_payload)
   } else if (ttype == TType$SET || ttype == TType$LIST) {

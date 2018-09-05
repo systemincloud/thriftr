@@ -18,7 +18,8 @@ Suggests: testthat
 Encoding: UTF-8
 Imports:
     R6,
-    rly
+    rly,
+    stringi
 RoxygenNote: 6.0.1
 Collate:
     'thrift.R'
