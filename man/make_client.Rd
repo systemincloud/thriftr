@@ -22,3 +22,30 @@ make_client(service, host = "localhost", port = 9090,
 \description{
 Create client side thrift API
 }
+\examples{
+\dontrun{
+# File calc.thrift content:
+# service Calculator {
+#   i32 add(1:i32 a, 2:i32 b);
+#   i32 sub(1:i32 a, 2:i32 b);
+#   i32 mult(1:i32 a, 2:i32 b);
+#   i32 div(1:i32 a, 2:i32 b);
+# }
+#
+
+calc_thrift <- thriftr::t_load("calc.thrift", module_name="calc_thrift")
+
+cal <- thriftr::make_client(
+    calc_thrift$Calculator,
+    "127.0.0.1",
+    6000)
+
+a <- cal$mult(5, 2)
+b <- cal$sub(7, 3)
+c <- cal$sub(6, 4)
+d <- cal$mult(b, 10)
+e <- cal$add(a, d)
+f <- cal$div(e, c)
+print(f)
+}
+}

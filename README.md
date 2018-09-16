@@ -51,7 +51,7 @@ Dispatcher <- R6::R6Class("Dispatcher",
   )
 )
 
-server = thriftr::make_server(pingpong_thrift.PingPong, Dispatcher(), '127.0.0.1', 6000)
+server = thriftr::make_server(pingpong_thrift$PingPong, Dispatcher$new(), '127.0.0.1', 6000)
 server$serve()
 ```
 

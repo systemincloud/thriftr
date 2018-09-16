@@ -4,11 +4,13 @@
 
   <groupId>thriftr</groupId>
   <artifactId>thriftr</artifactId>
-  <version>1.0.2</version>
+  <version>1.0.3</version>
   <packaging>pom</packaging>
   <name>Apache Thrift Client Server</name>
   
-  <description>R implementation of Apache Thrift.</description>
+  <description>Pure R implementation of Apache Thrift.
+    This library doesn't require any code generation.
+    To learn more about Thrift go to &lt;https://thrift.apache.org&gt;.</description>
   <url>https://github.com/systemincloud/thriftr</url>
 
   <organization>

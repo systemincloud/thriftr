@@ -29,6 +29,33 @@
 #' @param trans_factory factory that generates transport implementation
 #' 
 #' @export
+#'
+#' @examples
+#' \dontrun{
+#' # File calc.thrift content:
+#' # service Calculator {
+#' #   i32 add(1:i32 a, 2:i32 b);
+#' #   i32 sub(1:i32 a, 2:i32 b);
+#' #   i32 mult(1:i32 a, 2:i32 b);
+#' #   i32 div(1:i32 a, 2:i32 b);
+#' # }
+#' #
+#'
+#' calc_thrift <- thriftr::t_load("calc.thrift", module_name="calc_thrift")
+#'
+#' cal <- thriftr::make_client(
+#'     calc_thrift$Calculator,
+#'     "127.0.0.1",
+#'     6000)
+#'
+#' a <- cal$mult(5, 2)
+#' b <- cal$sub(7, 3)
+#' c <- cal$sub(6, 4)
+#' d <- cal$mult(b, 10)
+#' e <- cal$add(a, d)
+#' f <- cal$div(e, c)
+#' print(f)
+#' }
 make_client = function(service,
     host="localhost",
     port=9090,
@@ -57,6 +84,51 @@ make_client = function(service,
 #' @param trans_factory factory that generates transport implementation
 #'
 #' @export
+#'
+#' @examples
+#' \dontrun{
+#' # File calc.thrift content:
+#' # service Calculator {
+#' #   i32 add(1:i32 a, 2:i32 b);
+#' #   i32 sub(1:i32 a, 2:i32 b);
+#' #   i32 mult(1:i32 a, 2:i32 b);
+#' #   i32 div(1:i32 a, 2:i32 b);
+#' # }
+#' #
+#'
+#' calc_thrift <- thriftr::t_load("calc.thrift", module_name="calc_thrift")
+#'
+#' Dispatcher <- R6::R6Class("Dispatcher",
+#'   public = list(
+#'     add = function(a, b) {
+#'       print(sprintf("add -> %s + %s", a, b))
+#'       return(a + b)
+#'     },
+#'     sub = function(a, b) {
+#'       print(sprintf("sub -> %s - %s", a, b))
+#'       return(a - b)
+#'     },
+#'     mult = function(a, b) {
+#'       print(sprintf("mult -> %s * %s", a, b))
+#'       return(a * b)
+#'     },
+#'     div = function(a, b) {
+#'       print(sprintf("div -> %s / %s", a, b))
+#'       return(a / b)
+#'     }
+#'   )
+#' )
+#'
+#' server <- thriftr::make_server(
+#'     calc_thrift$Calculator,
+#'     Dispatcher$new(),
+#'     "127.0.0.1",
+#'     6000)
+#'
+#' print("serving...")
+#'
+#' server$serve()
+#' }
 make_server = function(service,
     handler,
     host="localhost",
