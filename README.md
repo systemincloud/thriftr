@@ -60,8 +60,8 @@ And a client:
 ```R
 library(thriftr)
 
-pingpong_thrift = thriftpy::t_load("pingpong.thrift", module_name="pingpong_thrift")
+pingpong_thrift = thriftr::t_load("pingpong.thrift", module_name="pingpong_thrift")
 
-client = thriftpy::make_client(pingpong_thrift$PingPong, "127.0.0.1", 6000)
+client = thriftr::make_client(pingpong_thrift$PingPong, "127.0.0.1", 6000)
 cut(client$ping())
 ```
