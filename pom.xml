@@ -113,7 +113,8 @@
 
                 <argument>${project.artifactId}</argument>
                 <argument>--with-keep.source</argument>
-                <argument>--no-multiarch</argument></arguments>
+                <argument>--no-multiarch</argument>
+              </arguments>
             </configuration>
           </execution>
         </executions>
