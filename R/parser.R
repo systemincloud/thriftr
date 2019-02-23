@@ -694,10 +694,10 @@ Parser <- R6::R6Class("Parser",
         index <- index + 1
         ref_type <- ref_type[[name]]
         if (is.null(ref_type)) {
-		      if (index != (length(strsplit(p$get(2), "\\.")[[1]]))) {
+          if (index != (length(strsplit(p$get(2), "\\.")[[1]]))) {
             stop(sprintf('No type found: %s, at line %d', p$get(2), p$lineno(2)))
-		      }
-		      p$set(1, incomplete_type$set_info(list(p$get(2), p$lineno(2))))
+          }
+          p$set(1, incomplete_type$set_info(list(p$get(2), p$lineno(2))))
           return()
         }
       }
