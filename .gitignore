@@ -8,6 +8,7 @@ src/*.so
 src/*.dll
 **/parser.out
 .project
+.settings
 .pydevproject
 thriftr.code-workspace
 .vscode/
