@@ -21,3 +21,8 @@ enum OS {
     Win = 3,
     Linux
 }
+
+struct Conf {
+  1: Lang lang=Lang.PHP
+  2: OS os=OS.Linux
+}
