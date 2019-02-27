@@ -917,7 +917,9 @@ Parser <- R6::R6Class("Parser",
         if (is.null(val)) val <- -1
         i <- 1
         for (item in kvs) {
-          if (is.null(item[[2]])) kvs[[i]][[2]] <- val + 1
+          if (is.null(item[[2]])) {
+            kvs[[i]][[2]] <- as.integer(val + 1)
+          }
           val <- kvs[[i]][[2]]
           i <- i + 1
         }
