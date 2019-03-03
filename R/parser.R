@@ -51,7 +51,8 @@ fill_incomplete_ttype <- function(tmodule, definition) {
   if (type == "list") {
     # fill const value
     if (definition[[1]] == 'UNKNOWN_CONST') {
-      ttype <- get_definition(tmodule, incomplete_type$dict[[as.character(definition[[2]])]][[1]], definition[[4]])
+      ttype <- get_definition(
+        tmodule, incomplete_type$dict[[as.character(definition[[2]])]][[1]], definition[[4]])
       return(Parser$new()$cast(ttype)(definition[[3]]))
     }
     # fill an incomplete alias ttype
@@ -75,6 +76,7 @@ fill_incomplete_ttype <- function(tmodule, definition) {
            length(clazz) > 1 && 
            clazz[[2]] == "thrift") {
     for (name in names(definition)) {
+      # skip inner attribute
       if (name %in% c(
         "thrift_meta", 
         "thrift_file", 
@@ -84,7 +86,7 @@ fill_incomplete_ttype <- function(tmodule, definition) {
         next
       }
       attr <- definition[[name]]
-      definition[[name]] <- fill_incomplete_ttype(tmodule, attr)
+      definition[[name]] <- fill_incomplete_ttype(definition, attr)
     }
   }
   # handle struct ttype
@@ -111,11 +113,18 @@ fill_incomplete_ttype <- function(tmodule, definition) {
         }
       }
       # if the ttype which field's ttype contains is incomplete
-      else if (typeof(value[[3]]) == "list") {
+      else if (typeof(value[[3]]) == "integer" && as.character(value[[3]]) %in% names(incomplete_type$dict)) {
+        it <- incomplete_type$dict[[as.character(value[[3]])]]
         definition$thrift_spec[[index]] <- list(
           value[[1]],
           value[[2]],
-          fill_incomplete_ttype(tmodule, value[[3]]),
+          fill_incomplete_ttype(
+            tmodule,
+            get_definition(
+              tmodule,
+              it[[1]],
+              it[[2]])
+          ),
           value[[4]])
       }
     }
