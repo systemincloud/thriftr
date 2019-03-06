@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/systemincloud/thriftr.svg?branch=master)](https://travis-ci.org/systemincloud/thriftr)
+[![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/thriftr)](https://cran.r-project.org/package=thriftr)
 [![](https://cranlogs.r-pkg.org/badges/thriftr)](https://cran.r-project.org/package=thriftr)
 [![codecov](https://codecov.io/gh/systemincloud/thriftr/branch/master/graph/badge.svg)](https://codecov.io/gh/systemincloud/thriftr)
 
