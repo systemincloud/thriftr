@@ -92,7 +92,7 @@ fill_incomplete_ttype <- function(tmodule, definition) {
   # handle struct ttype
   else if (type == "environment" && 
            length(clazz) > 0 && 
-           any(clazz == "R6ClassGenerator") &&
+           clazz[[1]] == "R6ClassGenerator" &&
            !is.null(definition$inherit) &&
            definition$inherit == "TPayload") {
     for (index in names(definition$thrift_spec)) {
@@ -132,7 +132,7 @@ fill_incomplete_ttype <- function(tmodule, definition) {
   # handle service method
   else if (type == "environment" && 
            length(clazz) > 0 && 
-           any(clazz == "R6ClassGenerator") &&
+           clazz[[1]] == "R6ClassGenerator" &&
            !(is.null(definition$thrift_services))) {
     for (name in names(definition)) {
       attr <- definition[[name]]

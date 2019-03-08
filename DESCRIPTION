@@ -1,8 +1,8 @@
 Package: thriftr
 Type: Package
 Title: Apache Thrift Client Server
-Version: 1.1.2
-Date: 2019-03-07
+Version: 1.1.3
+Date: 2019-03-08
 Authors@R: c(person("Marek", "Jagielski",
                     role = c("aut", "cre", "cph"),
                     email = "marek.jagielski@gmail.com"),
