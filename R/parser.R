@@ -36,7 +36,7 @@
 #' @export
 t_load <- function(path, module_name=NA, include_dirs=NA) {
   thrift <- parse(path, module_name, include_dirs = include_dirs)
-  if (length(ls(incomplete_type$dict)) > 0) {
+  if (length(names(incomplete_type$dict)) > 0) {
     fill_incomplete_ttype(thrift, thrift)
   }
     
@@ -50,7 +50,7 @@ fill_incomplete_ttype <- function(tmodule, definition) {
   # fill incomplete ttype
   if (type == "list") {
     # fill const value
-    if (definition[[1]] == 'UNKNOWN_CONST') {
+    if (typeof(definition[[1]]) == "character" && definition[[1]] == 'UNKNOWN_CONST') {
       ttype <- get_definition(
         tmodule, incomplete_type$dict[[as.character(definition[[2]])]][[1]], definition[[4]])
       return(Parser$new()$cast(ttype)(definition[[3]]))
@@ -61,7 +61,7 @@ fill_incomplete_ttype <- function(tmodule, definition) {
       return(list(definition[[1]], get_definition(tmodule, it[[1]], it[[2]])))
     }
     # fill service method which has incomplete arg, return ttype
-    else if (definition[[1]] %in% names(incomplete_type$dict)) {
+    else if (typeof(definition[[1]]) == "character" && definition[[1]] %in% names(incomplete_type$dict)) {
       it <- incomplete_type$dict[[as.character(definition[[1]])]]
       real_type <- get_definition(tmodule, it[[1]], it[[2]])
       return(list(real_type[[1]], definition[[2]], real_type[[2]], definition[[3]]))
@@ -386,7 +386,7 @@ Lexer <- R6::R6Class("Lexer",
           i <- i + 1
           if (substr(s, i, i) %in% maps) val <- val + maps[[substr(s, i, i)]]
           else {
-            msg <- sprintf("Unexcepted escaping characher: %s", substr(s, i, i))
+            msg <- sprintf("Unexcepted escaping character: %s", substr(s, i, i))
             stop("[ThriftLexerError]", msg)
           }
         } else val <- paste(val, substr(s, i, i), sep = "")
