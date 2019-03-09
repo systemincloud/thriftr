@@ -1,6 +1,6 @@
 #! /usr/bin/env Rscript
 
-sleep_thrift <- thriftr::load("oneway/sleep.thrift", module_name="sleep_thrift")
+sleep_thrift <- thriftr::t_load("oneway/sleep.thrift", module_name="sleep_thrift")
 
 Dispatcher <- R6::R6Class("Dispatcher",
   public = list(

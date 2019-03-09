@@ -1,6 +1,6 @@
 #! /usr/bin/env Rscript
 
-pp_thrift <- thriftr::load("ping/pingpong.thrift", module_name="pp_thrift")
+pp_thrift <- thriftr::t_load("ping/pingpong.thrift", module_name="pp_thrift")
 
 Dispatcher <- R6::R6Class("Dispatcher",
   public = list(
