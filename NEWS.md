@@ -1,3 +1,9 @@
+### Changes in v1.1.5
+
+#### BUG FIXES
+
+  1. Fix #5 'Error in private$trans$read(sz)'
+
 ### Changes in v1.1.4
 
 #### BUG FIXES
