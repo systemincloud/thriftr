@@ -240,12 +240,15 @@ binary_read_val <- function(inbuf, ttype, spec = NA, decode_response = TRUE) {
   } else if (ttype == TType$DOUBLE) {
     return(unpack_double(inbuf$read(8)))
   } else if (ttype == TType$STRING) {
-    sz = unpack_i32(inbuf$read(4))
-    byte_payload = inbuf$read(sz)
+    sz <- unpack_i32(inbuf$read(4))
+    byte_payload <- ''
+    if (sz > 0) {
+      byte_payload <- inbuf$read(sz)
+    }
 
     # Since we cannot tell if we're getting STRING or BINARY
     # if not asked not to decode, try both
-    if (decode_response) {
+    if (decode_response && sz > 0) {
       return(stringi::stri_encode(rawToChar(byte_payload), from = "UTF-8", to = "UTF-8"))
       # TODO
     } else return(byte_payload)
@@ -262,6 +265,11 @@ binary_read_val <- function(inbuf, ttype, spec = NA, decode_response = TRUE) {
     r_type_sz <- read_list_begin(inbuf)
     r_type <- r_type_sz[[1]]
     sz <- r_type_sz[[2]]
+
+    if (sz == 0) {
+      return(list())
+    }
+
     # the v_type is useless here since we already get it from spec
     if (r_type != v_type) {
       for (i in 1:sz) {
@@ -296,6 +304,11 @@ binary_read_val <- function(inbuf, ttype, spec = NA, decode_response = TRUE) {
     sk_type <- sk_type_sv_type_sz[[1]]
     sv_type <- sk_type_sv_type_sz[[2]]
     sz <- sk_type_sv_type_sz[[3]]
+
+    if (sz == 0) {
+      return(result)
+    }
+
     if (sk_type != k_type || sv_type != v_type) {
       for (i in 1:sz) {
         skip(inbuf, sk_type)

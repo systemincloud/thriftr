@@ -234,8 +234,10 @@ TClient <- R6Class("TClient",
       result <- private$service[[paste(api, "result", sep = "_")]]$new()
       result$read(private$iprot)
       private$iprot$read_message_end()
-
-      if (!is.null(result$success) && !is.na(result$success)) {
+      
+      if (typeof(result$success) == "list" ||
+          typeof(result$success) == "environment" ||
+          (!is.null(result$success) && !is.na(result$success))) {
         return(result$success)
       }
 

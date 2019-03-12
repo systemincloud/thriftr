@@ -50,11 +50,7 @@ TSocket <- R6Class("TSocket",
       private$init_sock()
     },
     read = function(sz) {
-      ret <- readBin(self$sock, raw(), sz)
-      if (length(ret) == 0) {
-        stop()
-      }
-      ret
+      return(readBin(self$sock, raw(), sz))
     },
     write = function(buff) {
       writeBin(buff, self$sock)
