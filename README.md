@@ -2,7 +2,7 @@
 [![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/thriftr)](https://cran.r-project.org/package=thriftr)
 [![](https://cranlogs.r-pkg.org/badges/thriftr)](https://cran.r-project.org/package=thriftr)
 [![codecov](https://codecov.io/gh/systemincloud/thriftr/branch/master/graph/badge.svg)](https://codecov.io/gh/systemincloud/thriftr)
-
+[![PayPal donation](https://img.shields.io/badge/donation-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=UR288FRQUSYQE&item_name=Thriftr+-+R+Thrift&currency_code=USD&source=url)
 
 Introduction
 ============
