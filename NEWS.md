@@ -1,3 +1,9 @@
+### Changes in v1.1.6
+
+#### NOTES
+
+  1. Resubmit. Dependency rly is fixed now.
+
 ### Changes in v1.1.5
 
 #### BUG FIXES
