@@ -4,7 +4,7 @@
 \name{TSocket}
 \alias{TSocket}
 \title{TSocket}
-\format{An \code{\link{R6Class}} generator object}
+\format{An \code{\link[R6]{R6Class}} generator object}
 \usage{
 TSocket
 }

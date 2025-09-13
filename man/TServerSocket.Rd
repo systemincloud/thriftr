@@ -4,7 +4,7 @@
 \name{TServerSocket}
 \alias{TServerSocket}
 \title{TServerSocket}
-\format{An \code{\link{R6Class}} generator object}
+\format{An \code{\link[R6]{R6Class}} generator object}
 \usage{
 TServerSocket
 }

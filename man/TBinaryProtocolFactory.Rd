@@ -4,7 +4,7 @@
 \name{TBinaryProtocolFactory}
 \alias{TBinaryProtocolFactory}
 \title{TBinaryProtocolFactory}
-\format{An \code{\link{R6Class}} generator object}
+\format{An \code{\link[R6]{R6Class}} generator object}
 \usage{
 TBinaryProtocolFactory
 }

@@ -4,7 +4,7 @@
 \name{TBufferedTransport}
 \alias{TBufferedTransport}
 \title{TBufferedTransport}
-\format{An \code{\link{R6Class}} generator object}
+\format{An \code{\link[R6]{R6Class}} generator object}
 \usage{
 TBufferedTransport
 }

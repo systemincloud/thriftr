@@ -4,7 +4,7 @@
 \name{TPayload}
 \alias{TPayload}
 \title{TPayload}
-\format{An \code{\link{R6Class}} generator object}
+\format{An \code{\link[R6]{R6Class}} generator object}
 \usage{
 TPayload
 }

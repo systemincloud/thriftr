@@ -4,7 +4,7 @@
 \name{TBinaryProtocol}
 \alias{TBinaryProtocol}
 \title{TBinaryProtocol}
-\format{An \code{\link{R6Class}} generator object}
+\format{An \code{\link[R6]{R6Class}} generator object}
 \usage{
 TBinaryProtocol
 }
