@@ -5,11 +5,11 @@ Version: ${project.version}
 Date: ${date}
 Authors@R: c(person("Marek", "Jagielski",
                     role = c("aut", "cre", "cph"),
-                    email = "marek.jagielski@gmail.com"),
+                    email = "marek.jagielski@pm.me"),
              person("Lixin", "Yu",
                     role = c("aut", "cph")))
 Author: Marek Jagielski [aut, cre, cph], Lixin Yu [aut, cph]
-Maintainer: Marek Jagielski <marek.jagielski@gmail.com>
+Maintainer: Marek Jagielski <marek.jagielski@pm.me>
 Description: ${project.description}
 License: MIT + file LICENSE
 URL: ${project.url}
