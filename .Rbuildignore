@@ -14,3 +14,6 @@
 ^\.vscode$
 ^README.md$
 ^NEWS.md$
+^\.mvn$
+^mvnw$
+^mvnw\.cmd$
